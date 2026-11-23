@@ -23,7 +23,7 @@
 #include <cstdio>
 
 extern "C" {
-#include "gen/gen.h"
+#include "../hooks.h"
 }
 
 namespace autoform {

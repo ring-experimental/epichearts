@@ -98,8 +98,11 @@ static volatile int g_skip_turbo;
 static int (*volatile g_turbo_keep)(void);
 void java_set_turbo(int on, int (*keep)(void)) { g_turbo_keep = keep; g_skip_turbo = on; }
 int java_turbo(void) { return g_skip_turbo; }
+volatile uint32_t g_game_frames; /* cNixSystem::Run frames (its per-frame appLock.wait), for EH_FPS */
+volatile int32_t g_game_wait_ms;  /* the last per-frame wait the game asked for: 0 or less = behind */
 JM(obj_wait_ms) {
     UNUSED;
+    if (self == g_applock) { g_game_frames++; g_game_wait_ms = (int32_t)a[0]; }
     if (g_turbo < 0) g_turbo = getenv("EH_TURBO") != NULL;
     /* checked on the game thread every frame, so not one frame past the skipped scene runs unpaced */
     if (g_skip_turbo && self == g_applock && g_turbo_keep && !g_turbo_keep()) g_skip_turbo = 0;

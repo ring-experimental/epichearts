@@ -19,6 +19,7 @@ uint32_t rc_call(Cpu *c, uint32_t va, int nargs, const uint32_t *args);
 Cpu *rc_new_cpu(uint32_t stack_size);
 void rc_run_init_array(Cpu *c);
 const char *rc_func_name(uint32_t va);
+int rc_func_name_exact(uint32_t va);
 
 /* guest-style printf: format from guest memory, args pulled from an ARM argument stream */
 typedef struct {
@@ -33,6 +34,10 @@ int guest_vformat(char *out, size_t outsz, const char *fmt, ArgStream *a);
 
 /* paths */
 extern char g_apk_path[1024];
+#ifdef __EMSCRIPTEN__
+#include <stdio.h>
+FILE *host_open_apk(void); /* a read stream over the APK bytes the page handed over (main.c) */
+#endif
 extern char g_data_dir[1024];
 const char *host_map_path(const char *guest_path, char *buf, size_t n);
 

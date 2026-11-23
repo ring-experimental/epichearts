@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- drawn for this port (not taken from the original) -->
+  <rect width="512" height="512" rx="96" fill="#0b0d12"/>
+  <path d="M256 412 C 120 316 84 256 84 196 C 84 142 126 104 176 104 C 212 104 240 124 256 152 C 272 124 300 104 336 104 C 386 104 428 142 428 196 C 428 256 392 316 256 412 Z" fill="#ff6f91"/>
+  <path d="M232 150 L 300 150 L 300 176 L 262 176 L 262 206 L 294 206 L 294 232 L 262 232 L 262 262 L 300 262 L 300 288 L 232 288 Z" fill="#fff4e8"/>
+</svg>

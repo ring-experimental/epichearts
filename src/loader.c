@@ -1,7 +1,12 @@
 /* Image loader for libtar-android.so: maps the PT_LOAD segments, applies .rel.dyn/.rel.plt,
  * provides import cells and the guest-address -> recompiled-function dispatch. */
 #include "rc.h"
+#ifdef EH_INTERP
+#include "interp.h"
+#include "hooks.h"
+#else
 #include "gen/gen.h"
+#endif
 #include "host.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -11,9 +16,16 @@
 uint32_t IMG;
 
 typedef struct { uint32_t va; GuestFn fn; const char *name; } FuncEnt;
+#ifdef EH_INTERP
+/* function names for logs: the image's defined FUNC symbols (mangled), sorted by vaddr at load */
+static FuncEnt *g_funcs;
+static size_t g_nfuncs;
+#else
 static const FuncEnt g_funcs[] = {
 #include "gen/functab.inc"
 };
+static const size_t g_nfuncs = sizeof(g_funcs) / sizeof(g_funcs[0]);
+#endif
 
 /* import cells live right after the image: vaddr IMPORT_VA + 4*i */
 #define IMPORT_VA 0x1a0000u
@@ -22,10 +34,21 @@ static const FuncEnt g_funcs[] = {
 #define MAP_SIZE 0x1a8000u
 
 typedef struct { const char *name; GuestFn fn; } ImportEnt;
+#ifdef EH_INTERP
+#define IMPORT(n) void imp_##n(Cpu *c);
+#include "imports.inc"
+#undef IMPORT
+void imp___aeabi_atexit(Cpu *c);
+#define IMPORT(n) {#n, imp_##n},
+static const ImportEnt g_imports[] = {
+#include "imports.inc"
+};
+#else
 #define IMPORT(n) {#n, imp_##n},
 static const ImportEnt g_imports[] = {
 #include "gen/imports.inc"
 };
+#endif
 #undef IMPORT
 #define NIMPORTS (sizeof(g_imports) / sizeof(g_imports[0]))
 
@@ -49,12 +72,24 @@ uint32_t rc_host_fn(GuestFn fn, const char *name) {
 
 const char *rc_func_name(uint32_t va) {
     va &= ~1u;
-    int lo = 0, hi = (int)(sizeof(g_funcs) / sizeof(g_funcs[0])) - 1, best = -1;
+    int lo = 0, hi = (int)g_nfuncs - 1, best = -1;
     while (lo <= hi) {
         int mid = (lo + hi) / 2;
         if (g_funcs[mid].va <= va) { best = mid; lo = mid + 1; } else hi = mid - 1;
     }
     return best >= 0 ? g_funcs[best].name : "?";
+}
+
+/* nonzero if a named function starts exactly at va */
+int rc_func_name_exact(uint32_t va) {
+    va &= ~1u;
+    int lo = 0, hi = (int)g_nfuncs - 1;
+    while (lo <= hi) {
+        int mid = (lo + hi) / 2;
+        if (g_funcs[mid].va == va) return 1;
+        if (g_funcs[mid].va < va) lo = mid + 1; else hi = mid - 1;
+    }
+    return 0;
 }
 
 void rc_trap(Cpu *c, uint32_t va, const char *why) {
@@ -69,6 +104,62 @@ void rc_trap(Cpu *c, uint32_t va, const char *why) {
  * FUN_000f2f7c): its pop {pc} then arrives here and must unwind back to rc_call instead of trapping. */
 #define RET_MAGIC 0xfffffff1u
 
+#ifdef EH_INTERP
+/* ---- interpreter build: the image's code runs in interp.c ---- */
+unsigned char *rc_hookmap;
+typedef struct { uint32_t va; GuestFn fn; } HookEnt;
+#define RC_HOOK_ENT(v) {0x##v##u, f_##v},
+static const HookEnt g_hooks[] = {RC_HOOKS(RC_HOOK_ENT)};
+#undef RC_HOOK_ENT
+
+GuestFn rc_hook_fn(uint32_t va) {
+    if (rc_hookmap[va >> 1] == 2) return accel_fn(va);
+    for (size_t i = 0; i < sizeof(g_hooks) / sizeof(g_hooks[0]); i++)
+        if (g_hooks[i].va == va) return g_hooks[i].fn;
+    return accel_fn(va); /* native versions of hot original routines (accel.c), NULL when declined */
+}
+
+GuestFn rc_host_target(uint32_t addr) {
+    uint32_t va = (addr & ~1u) - IMG;
+    if (va >= IMPORT_VA && va < IMPORT_VA + 4 * NIMPORTS) return g_imports[(va - IMPORT_VA) / 4].fn;
+    if (va >= HOSTFN_VA && va < HOSTFN_VA + 4u * g_nhostfn) return g_hostfn[(va - HOSTFN_VA) / 4];
+    return NULL;
+}
+
+/* ARM-mode functions of the image replaced by the host, found by symbol at load. tools/recomp.py does the same for
+ * BLX to __aeabi_atexit (@ghidra 00173fbc): destructors registered at static init are never run (imp___aeabi_atexit) */
+static uint32_t g_va_atexit;
+GuestFn rc_arm_fn(uint32_t va) { return va && va == g_va_atexit ? imp___aeabi_atexit : NULL; }
+
+/* f_<vaddr>_orig (hooks.h): the original function under a host wrapper */
+void rc_orig(Cpu *c, uint32_t va) {
+    c->r[14] = RET_MAGIC;
+    interp_run(c, IMG + va);
+}
+
+#define RC_DEF_ORIG(v) void f_##v##_orig(Cpu *c) { rc_orig(c, 0x##v##u); }
+RC_HOOKS(RC_DEF_ORIG)
+#undef RC_DEF_ORIG
+
+void rc_dispatch(Cpu *c, uint32_t target) {
+    if (target == RET_MAGIC) return;
+    uint32_t va = (target & ~1u) - IMG;
+    if (va < IMPORT_VA) {
+        GuestFn h = rc_hookmap[va >> 1] ? rc_hook_fn(va) : NULL;
+        if (h) { h(c); return; }
+        c->r[14] = RET_MAGIC;
+        interp_run(c, IMG + va);
+        return;
+    }
+    GuestFn f = rc_host_target(target);
+    if (f) { f(c); return; }
+    host_log("[rc] dispatch to unknown address %08x (vaddr %06x)", target, va);
+    rc_trap(c, va, "bad dispatch");
+}
+
+uint32_t g_last_unwind_from;
+void rc_jump(Cpu *c, uint32_t target, uint32_t from_va) { (void)from_va; rc_dispatch(c, target); }
+#else
 void rc_dispatch(Cpu *c, uint32_t target) {
     if (target == RET_MAGIC) { c->unwind = RET_MAGIC; return; }
     uint32_t va = (target & ~1u) - IMG;
@@ -95,6 +186,7 @@ void rc_jump(Cpu *c, uint32_t target, uint32_t from_va) {
     c->unwind = target;
     g_last_unwind_from = from_va;
 }
+#endif
 
 /* ---- ELF parsing (only what this one file needs) ---- */
 typedef struct { uint32_t p_type, p_offset, p_vaddr, p_paddr, p_filesz, p_memsz, p_flags, p_align; } Phdr;
@@ -103,10 +195,23 @@ typedef struct { uint32_t st_name, st_value, st_size; uint8_t st_info, st_other;
 
 static uint8_t *g_file;
 
+#ifdef EH_INTERP
+static uint32_t symtab_hash(const uint8_t *base, uint32_t dyn_off, uint32_t dyn_sz) {
+    for (const uint32_t *d = (const uint32_t *)(base + dyn_off); d < (const uint32_t *)(base + dyn_off + dyn_sz) && d[0]; d += 2)
+        if (d[0] == 4) return d[1]; /* DT_HASH */
+    return 0;
+}
+static int cmp_func(const void *a, const void *b) {
+    uint32_t x = ((const FuncEnt *)a)->va, y = ((const FuncEnt *)b)->va;
+    return x < y ? -1 : x > y;
+}
+#endif
+
 int rc_load_image(uint8_t *file) {
     g_file = file;
 
     uint8_t *base = gas_image(MAP_SIZE);
+    if (!base) host_fatal("image allocation failed");
     IMG = HPTR(base);
 
     uint32_t phoff = *(uint32_t *)(g_file + 0x1c);
@@ -157,8 +262,25 @@ int rc_load_image(uint8_t *file) {
         }
     }
 
+#ifdef EH_INTERP
+    rc_hookmap = calloc(IMPORT_VA >> 1, 1);
+    for (size_t i = 0; i < sizeof(g_hooks) / sizeof(g_hooks[0]); i++) rc_hookmap[g_hooks[i].va >> 1] = 1;
+    accel_init(rc_hookmap);
+    /* names for logs: defined FUNC symbols (st_info type 2), Thumb bit dropped */
+    {
+        uint32_t nsym = ((uint32_t *)(base + symtab_hash(base, dyn_off, dyn_sz)))[1];
+        g_funcs = calloc(nsym, sizeof(FuncEnt));
+        for (uint32_t i = 1; i < nsym; i++)
+            if (syms[i].st_shndx && (syms[i].st_info & 15) == 2 && syms[i].st_value)
+                g_funcs[g_nfuncs++] = (FuncEnt){syms[i].st_value & ~1u, NULL, strs + syms[i].st_name};
+        qsort(g_funcs, g_nfuncs, sizeof(FuncEnt), cmp_func);
+        for (uint32_t i = 1; i < nsym; i++)
+            if (syms[i].st_shndx && !strcmp(strs + syms[i].st_name, "__aeabi_atexit")) g_va_atexit = syms[i].st_value & ~1u;
+    }
+#else
     g_disp = calloc(IMPORT_VA >> 1, sizeof(GuestFn));
-    for (size_t i = 0; i < sizeof(g_funcs) / sizeof(g_funcs[0]); i++) g_disp[g_funcs[i].va >> 1] = g_funcs[i].fn;
+    for (size_t i = 0; i < g_nfuncs; i++) g_disp[g_funcs[i].va >> 1] = g_funcs[i].fn;
+#endif
     return 1;
 }
 
@@ -229,6 +351,7 @@ uint32_t rc_call(Cpu *c, uint32_t va, int nargs, const uint32_t *args) {
 Cpu *rc_new_cpu(uint32_t stack_size) {
     Cpu *c = calloc(1, sizeof(Cpu));
     uint8_t *stk = GAS_64 ? gas_malloc(stack_size) : host_valloc(0, stack_size);
+    if (!stk) host_fatal("guest stack allocation failed");
     c->r[13] = HPTR(stk + stack_size - 64);
     return c;
 }

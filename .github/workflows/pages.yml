@@ -1,0 +1,62 @@
+# Builds the web page and publishes it on GitHub Pages.
+# The runner only has this repository: no original APK, no src/gen. The web build interprets the original the
+# player chooses in the browser (src/interp.c), so it builds without it; anything that needs the original fails here.
+name: pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: tools
+        run: sudo apt-get update && sudo apt-get install -y ninja-build
+      - uses: mymindstorm/setup-emsdk@v14
+        with:
+          version: 7.0.1
+          actions-cache-folder: emsdk-cache
+      - name: third_party cache (SDL3, FreeType, RmlUi, stb_truetype, dr_mp3)
+        uses: actions/cache@v4
+        with:
+          path: third_party
+          key: third-party-${{ hashFiles('tools/deps.sh') }}
+      - name: third_party
+        run: bash tools/deps.sh
+      - name: build
+        run: |
+          emcmake cmake -S . -B build_web -G Ninja -DCMAKE_BUILD_TYPE=Release
+          cmake --build build_web
+          python3 tools/web_site.py build_web
+      - name: nothing of the original in the page
+        run: |
+          test ! -e src/gen
+          cd build_web/site
+          ls -la
+          ! ls | grep -Ev '^(index\.html|app\.js|sw\.js|manifest\.webmanifest|icon\.svg|icon-(192|512)\.png|epichearts\.(js|wasm|data))$'
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: build_web/site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

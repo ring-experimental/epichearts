@@ -213,7 +213,12 @@ IMP(fopen) {
     char m[8]; size_t k = 0;
     for (; *mode && k < 5; mode++) if (*mode != 'b') m[k++] = *mode;
     m[k++] = 'b'; m[k] = 0;
+#ifdef __EMSCRIPTEN__
+    /* the original APK lives in memory (main.c): the game's reads of it never wait on the page's thread */
+    FILE *f = !strcmp(p, g_apk_path) && m[0] == 'r' ? host_open_apk() : fopen(p, m);
+#else
     FILE *f = fopen(p, m);
+#endif
     if (!f) g_errno = ENOENT;
     { extern int g_jtrace; if (g_jtrace || getenv("EH_FTRACE")) host_log("[fopen] %s (%s) -> %s", p, m, f ? "ok" : "FAILED"); }
     RET(c, f ? gas_handle(f) : 0);

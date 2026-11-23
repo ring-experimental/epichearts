@@ -13,6 +13,10 @@
 #include "ui/ui.h"
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
+#ifdef __EMSCRIPTEN__
+#include <emscripten.h>
+#include <emscripten/console.h>
+#endif
 #include <math.h>
 #include <stdarg.h>
 #include <stdio.h>
@@ -32,6 +36,9 @@ void host_log(const char *fmt, ...) {
     va_end(ap);
 #ifdef __ANDROID__
     SDL_Log("%s", buf);
+#elif defined(__EMSCRIPTEN__)
+    /* straight to this thread's console: stderr of a worker would wait for the page's thread to print it */
+    emscripten_console_warn(buf);
 #else
     fprintf(stderr, "%s\n", buf);
 #endif
@@ -270,6 +277,23 @@ static void setup_paths(int argc, char **argv) {
     snprintf(g_data_dir, sizeof g_data_dir, "%s/save", cwd);
     host_mkdir(g_data_dir);
 }
+#elif defined(__EMSCRIPTEN__)
+void host_backtrace(int depth) { (void)depth; }
+/* Browser: the page (web/app.js) reads the original APK the player chose from its own storage and hands the bytes
+ * over before main (eh_set_apk). It stays in wasm memory: the game's reads (fopen of the APK path + offsets, from
+ * the game thread) go through fmemopen and never wait on the page's thread. Saves and settings live in /persist
+ * (IndexedDB, mounted and synced by the page). */
+static uint8_t *g_apk_mem;
+static size_t g_apk_mem_size;
+EMSCRIPTEN_KEEPALIVE void eh_set_apk(uint8_t *bytes, size_t size) { g_apk_mem = bytes; g_apk_mem_size = size; }
+FILE *host_open_apk(void) { return g_apk_mem ? fmemopen(g_apk_mem, g_apk_mem_size, "rb") : NULL; }
+static void setup_paths(int argc, char **argv) {
+    (void)argc; (void)argv;
+    snprintf(g_apk_path, sizeof g_apk_path, "/apk/epichearts.apk");
+    host_mkdir("/persist");
+    snprintf(g_data_dir, sizeof g_data_dir, "/persist/save");
+    host_mkdir(g_data_dir);
+}
 #else
 #include <unistd.h>
 void host_backtrace(int depth) { (void)depth; }
@@ -335,6 +359,11 @@ static void choose_window(int *ww, int *wh, double *aspect) {
     if (*aspect < 1.0) *aspect = 1.0 / *aspect; /* landscape only */
 #ifdef __ANDROID__
     *ww = b.w > b.h ? b.w : b.h; *wh = b.w > b.h ? b.h : b.w;
+#elif defined(__EMSCRIPTEN__)
+    /* the page's size when the game starts; a phone held upright still gets a landscape game (the page asks to turn it) */
+    *ww = EM_ASM_INT({ return window.innerWidth; });
+    *wh = EM_ASM_INT({ return window.innerHeight; });
+    if (*ww > 0 && *wh > 0) *aspect = *ww > *wh ? (double)*ww / *wh : (double)*wh / *ww;
 #else
     /* windowed default: about 80% of the display height */
     *wh = (int)(b.h * 0.8); *ww = (int)lround(*wh * *aspect);
@@ -345,6 +374,24 @@ static void choose_window(int *ww, int *wh, double *aspect) {
 }
 
 int g_game_w = 512, g_game_h = 320;
+
+/* main loop state (main_frame) */
+static Cpu *g_c;
+static uint32_t g_env, g_render;
+static const char *script;
+static int script_wait = -1;
+static const char *ctrl_path;
+static long ctrl_off;
+static int pending_up_frames, up_x, up_y;
+static int monkey;
+static uint32_t monkey_state;
+static int frame, shot_every;
+static int burst_left, burst_i; /* EH_CTRL burst <n>: a screenshot every frame (burst_000.bmp ...) */
+static void main_frame(void);
+static void main_shutdown(void);
+#ifdef __EMSCRIPTEN__
+static void web_frame(void);
+#endif
 
 int main(int argc, char **argv) {
 #ifdef _WIN32
@@ -361,7 +408,7 @@ int main(int argc, char **argv) {
     SDL_SetHint(SDL_HINT_MOUSE_TOUCH_EVENTS, "0");
     if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_GAMEPAD)) host_fatal(SDL_GetError());
     setup_paths(argc, argv);
-#ifndef _WIN32
+#if !defined(_WIN32) && !defined(__EMSCRIPTEN__) /* the browser logs to the console only */
     { /* the previous run's log is kept (epichearts.prev.log): after a crash the player restarts the game */
         char lp[1100], pp[1100], dir[1100];
         snprintf(dir, sizeof dir, "%s/..", g_data_dir);
@@ -389,11 +436,16 @@ int main(int argc, char **argv) {
     if (g_game_w < 400) g_game_w = 400;
     if (g_game_w > 800) g_game_w = 800;
 
-#ifdef __ANDROID__
+#if defined(__ANDROID__) || defined(__EMSCRIPTEN__)
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
+#ifdef __EMSCRIPTEN__
+    /* WebGL 2 canvas that fills the page and follows its size */
+    SDL_WindowFlags wf = SDL_WINDOW_OPENGL | SDL_WINDOW_FILL_DOCUMENT | SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIGH_PIXEL_DENSITY;
+#else
     SDL_WindowFlags wf = SDL_WINDOW_OPENGL | SDL_WINDOW_FULLSCREEN | SDL_WINDOW_HIGH_PIXEL_DENSITY;
+#endif
 #else
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
@@ -418,6 +470,7 @@ int main(int argc, char **argv) {
     uint32_t so_off, so_size;
     if (!apk_find("lib/armeabi/libtar-android.so", &so_off, &so_size)) host_fatal("libtar-android.so not found in apk");
     if (!rc_load_image(apk_read(so_off, so_size))) host_fatal("image load failed");
+    host_log("[boot] image loaded");
     /* optional: glyph cache generated by the original on Android (tools/pull_glyphcache.sh). The game reads
      * getFilesDir()/flfoo.png in cSmartCacheFont::ReadPresavedFile and only renders missing glyphs itself. */
     {
@@ -451,42 +504,59 @@ int main(int argc, char **argv) {
     }
     jni_init();
     java_register_all();
+    host_log("[boot] jni ready");
 
     Cpu *c = rc_new_cpu(8 << 20);
     rc_run_init_array(c);
+    host_log("[boot] static init done");
     uint32_t env = jni_env(), gm = HPTR(g_gofmgr);
     {
         uint32_t a[2] = {env, gm};
         rc_call(c, sym("Java_com_ftt_gof2d_GofManager_InitJNI"), 2, a);
         rc_call(c, sym("Java_com_ftt_gof2d_GofManager_CacheJNI"), 2, a);
+        host_log("[boot] InitJNI / CacheJNI done");
     }
     /* MyRenderer.onSurfaceChanged -> GofManager.glViewCreated(w, h): the game's surface is its own framebuffer
      * size, so touch coordinates are framebuffer pixels (ui_window_to_game maps window input) */
     {
         uint32_t a[4] = {env, gm, (uint32_t)g_game_w, (uint32_t)g_game_h};
         rc_call(c, sym("Java_com_ftt_gof2d_GofManager_GLViewCreated"), 4, a);
+        host_log("[boot] GLViewCreated done");
     }
     g_thread_state = 1;
     SDL_Thread *gt = SDL_CreateThread(game_thread, "game", NULL);
     (void)gt;
 
-    uint32_t render = sym("Java_com_ftt_gof2d_GLView_MyRenderer_render");
+    g_c = c;
+    g_env = env;
+    g_render = sym("Java_com_ftt_gof2d_GLView_MyRenderer_render");
     /* EH_SCRIPT="<frames> tap <x> <y>; ..." (test driver, game framebuffer coordinates) */
-    const char *script = getenv("EH_SCRIPT");
-    int script_wait = -1;
-    const char *ctrl_path = getenv("EH_CTRL");
-    long ctrl_off = 0;
-    int pending_up_frames = 0, up_x = 0, up_y = 0;
-    int monkey = getenv("EH_MONKEY") != NULL;
-    uint32_t monkey_state = monkey ? (uint32_t)atoi(getenv("EH_MONKEY")) : 0;
-    int frame = 0, shot_every = getenv("EH_SHOT") ? atoi(getenv("EH_SHOT")) : 0;
-    int burst_left = 0, burst_i = 0; /* EH_CTRL burst <n>: a screenshot every frame (burst_000.bmp ...) */
-    while (!g_quit) {
+    script = getenv("EH_SCRIPT");
+    ctrl_path = getenv("EH_CTRL");
+    monkey = getenv("EH_MONKEY") != NULL;
+    monkey_state = monkey ? (uint32_t)atoi(getenv("EH_MONKEY")) : 0;
+    shot_every = getenv("EH_SHOT") ? atoi(getenv("EH_SHOT")) : 0;
+#ifdef __EMSCRIPTEN__
+    /* the browser drives the frames (requestAnimationFrame); main returns and the runtime stays */
+    emscripten_set_main_loop(web_frame, 0, 0);
+    return 0;
+#else
+    while (!g_quit) main_frame();
+    main_shutdown();
+    return 0;
+#endif
+}
+
+/* one frame of the activity: input, test drivers, MyRenderer.onDrawFrame, presentation */
+static void main_frame(void) {
+    Cpu *c = g_c;
+    uint32_t env = g_env, render = g_render;
+    {
         SDL_Event e;
         while (SDL_PollEvent(&e)) {
             if (java_text_event(c, &e)) continue;
             switch (e.type) {
-            case SDL_EVENT_QUIT: g_quit = 1; continue;
+            case SDL_EVENT_QUIT: g_quit = 1; return;
             /* Activity onPause/onResume -> GofManager.suspend (threadState 2) / resume (1 + appLock.notifyAll) */
             case SDL_EVENT_WINDOW_MINIMIZED:
             case SDL_EVENT_DID_ENTER_BACKGROUND:
@@ -577,19 +647,36 @@ int main(int argc, char **argv) {
             if ((r >> 20) % 5 == 0) { java_set_touch(1, x, y); java_set_touch(4, (x + 120) % g_game_w, y); pending_up_frames = 30; up_x = (x + 120) % g_game_w; up_y = y; }
             else { java_set_touch(1, x, y); pending_up_frames = 4; up_x = x; up_y = y; }
         }
-        if (g_thread_state == 2) { SDL_Delay(50); continue; } /* GLSurfaceView paused: no onDrawFrame */
+        if (g_thread_state == 2) { /* GLSurfaceView paused: no onDrawFrame */
+#ifndef __EMSCRIPTEN__
+            SDL_Delay(50);
+#endif
+            return;
+        }
+        Uint64 t0 = SDL_GetTicksNS();
         ui_update();
+        Uint64 t1 = SDL_GetTicksNS();
         /* MyRenderer.onDrawFrame: glClear(GL_COLOR_BUFFER_BIT); render() -> delivers the frame to the presenter */
         uint32_t a[2] = {env, 0};
         rc_call(c, render, 2, a);
+        Uint64 t2 = SDL_GetTicksNS();
         frame++;
         if (burst_left > 0) { char fn[32]; snprintf(fn, sizeof fn, "burst_%03d.bmp", burst_i++); ui_request_shot(fn); burst_left--; }
-        if (getenv("EH_FPS") && frame % 300 == 0) {
+        if (getenv("EH_FPS")) { /* every 5 s: presented frames, game frames, and the game's last frame wait */
+            extern volatile uint32_t g_game_frames;
+            extern volatile int32_t g_game_wait_ms;
             static Uint64 last;
+            static int last_frame;
+            static uint32_t last_game;
             Uint64 now = SDL_GetTicks();
-            uint32_t sys = M32(IMG + rc_sym("the_sys"));
-            if (last) host_log("[fps] %.1f (cNixSystem frame interval %d ms, +0x1c %d)", 300000.0 / (double)(now - last), sys ? (int)M32(sys + 0x14) : -1, sys ? (int)M32(sys + 0x1c) : -1);
-            last = now;
+            if (!last) { last = now; last_frame = frame; last_game = g_game_frames; }
+            else if (now - last >= 5000) {
+                uint32_t sys = M32(IMG + rc_sym("the_sys"));
+                double s = (double)(now - last) / 1000.0;
+                host_log("[fps] present %.1f, game %.1f (frame interval %d ms, last wait %d ms)", (frame - last_frame) / s,
+                         (g_game_frames - last_game) / s, sys ? (int)M32(sys + 0x14) : -1, (int)g_game_wait_ms);
+                last = now; last_frame = frame; last_game = g_game_frames;
+            }
         }
         if (shot_every && frame % shot_every == 0) {
             char fn[64];
@@ -597,8 +684,27 @@ int main(int argc, char **argv) {
             ui_request_shot(fn);
         }
         ui_render_and_swap();
+        { Uint64 t3 = SDL_GetTicksNS(); static Uint64 prev; if (getenv("EH_FPS") && (t3 - t0 > 100000000 || (prev && t0 - prev > 200000000))) host_log("[slow] frame %d: since last %llu ms, ui %llu, render %llu, present %llu", frame, prev ? (unsigned long long)((t0 - prev) / 1000000) : 0ull, (unsigned long long)((t1 - t0) / 1000000), (unsigned long long)((t2 - t1) / 1000000), (unsigned long long)((t3 - t2) / 1000000)); prev = t3; }
     }
+}
+
+#ifdef __EMSCRIPTEN__
+static void web_frame(void) {
+    if (!g_quit) main_frame();
+    if (g_quit) {
+        emscripten_cancel_main_loop();
+        main_shutdown();
+        /* the page offers to start again (web/app.js) */
+        EM_ASM({ if (Module.onGameQuit) Module.onGameQuit(); });
+    }
+}
+#endif
+
+static void main_shutdown(void) {
     host_log("quit");
+#ifdef EH_INTERP
+    { extern void interp_prof_dump(void); interp_prof_dump(); } /* -DEH_IPROF builds only */
+#endif
     /* requestQuit -> Activity.finish -> onDestroy -> GofManager.kill: threadState 3 (+ appLock.notifyAll for a
      * paused thread). cNixSystem::Run @00166ebc then calls destroyClet and GofManager.releaseInstance and returns.
      * Before, the port only left this loop: on Android the activity closed but the game thread and the music kept
@@ -614,5 +720,4 @@ int main(int argc, char **argv) {
     /* the recompiled game's memory is initialised once per process: a relaunch must start a new one */
     exit(0);
 #endif
-    return 0;
 }

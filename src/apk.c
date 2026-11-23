@@ -2,6 +2,7 @@
  * STORED (uncompressed), which is what Android's AssetManager.openFd / openRawResourceFd require
  * (com/ftt/gof2d/file/GofFileBridge.getApkFileOffseet). */
 #include "apk.h"
+#include "host.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -12,7 +13,12 @@ static int g_nent;
 static FILE *g_apk;
 
 int apk_open(const char *path) {
+#ifdef __EMSCRIPTEN__
+    (void)path;
+    g_apk = host_open_apk(); /* the bytes the page handed over (main.c) */
+#else
     g_apk = fopen(path, "rb");
+#endif
     if (!g_apk) return 0;
     fseek(g_apk, 0, SEEK_END);
     long sz = ftell(g_apk);

@@ -11,9 +11,42 @@ SDL3로 대체해 Windows에서 실행합니다. 게임 로직·렌더링(소프
 > `work/databind/golden*/`)은 저장소에도 커밋 기록에도 없습니다(`.gitignore`). 직접 가진 APK를 저장소 루트에 두고
 > `python tools/bootstrap.py`를 실행하면 로컬에서 다시 만듭니다. 경로는 모두 저장소 루트 기준 상대 경로이고, 기계마다 다른 것
 > (Android SDK·NDK, Visual Studio, 서명 키)은 환경 변수나 표준 설치 위치에서 찾습니다.
->
-> 브라우저(PWA) 판은 아직 없습니다. 네이티브 빌드는 원본 코드를 C로 번역해 실행 파일에 넣으므로 공개 배포할 수 없고,
-> 웹 판은 사용자가 고른 APK를 브라우저 안에서 실행하는 인터프리터가 있어야 합니다(작업 예정).
+
+브라우저 판(PWA): <https://ring-experimental.github.io/epichearts/>
+페이지를 열고 가지고 있는 원본 `epichearts.apk`를 고르면 그 기기 안에서 실행합니다. 파일은 어디로도 보내지 않습니다.
+
+## 웹 빌드 (`web/`, `src/interp.c`)
+
+네이티브 빌드는 원본 코드를 C로 번역(`src/gen`)해 실행 파일에 넣으므로 공개 배포하지 않습니다. 웹 빌드는 번역 C 없이
+**원본 .so를 브라우저에서 해석 실행**합니다. 페이지에는 실행 환경만 있고, 게임 코드는 사용자가 고른 APK에서 읽습니다.
+
+| 구성 | 내용 |
+|---|---|
+| `src/interp.c` | ARMv5TE Thumb 인터프리터(+ 원본의 Thumb-2 패치 구역에 쓰인 명령). `rc.h`의 레지스터 파일, 임포트, 훅을 번역 빌드와 그대로 공유 |
+| `src/accel.c` | 원본의 가장 무거운 픽셀 루틴 16개(`alPaletteEf_R5G6B5`, `fnGFFillRect_2b`, 팔레트·알파 행 그리기 등)를 디스어셈블리로부터 다시 쓴 네이티브 판. 각 루틴에 원본 주소를 적었다 |
+| `src/hooks.h` | 호스트 래퍼가 붙는 원본 함수 목록. 번역 빌드(`tools/recomp.py`)와 해석 빌드가 같은 목록을 쓴다 |
+| `web/` | 페이지(`index.html`, `app.js`), 서비스 워커(`sw.js`: 오프라인 캐시 + 교차 출처 격리 헤더), 매니페스트, 직접 그린 아이콘 |
+
+- 스레드(원본의 게임 스레드와 pthread)는 Emscripten pthreads로 돈다. SharedArrayBuffer에 필요한 COOP/COEP 헤더를
+  GitHub Pages가 보내지 않으므로 서비스 워커가 붙이고, 첫 방문은 한 번 새로 고친다.
+- APK는 IndexedDB(`epichearts-apk`)에 그대로 두고, 시작할 때 wasm 메모리로 옮겨 `fmemopen`으로 읽는다(`src/main.c`
+  `eh_set_apk`). 세이브와 설정은 `/persist`(IDBFS)에 있고 몇 초마다, 페이지를 떠날 때 저장한다.
+- 지원하는 원본은 `lib/armeabi/libtar-android.so`의 SHA-256이 `36eb21b8…`인 판 하나다(훅과 네이티브 루틴이 그 판의 주소를 쓴다).
+- 성능(헤드리스 Chrome, 소프트웨어 GL): 필드에서 원작 속도(프레임 간격 37 ms, 약 27 fps)를 유지하며 프레임마다 약 30 ms가 남는다.
+
+빌드와 확인:
+
+```bash
+bash tools/deps.sh                 # third_party/: SDL3, FreeType, RmlUi, stb_truetype, dr_mp3 (고정 판, SHA-256 확인)
+emcmake cmake -S . -B build_web -G Ninja -DCMAKE_BUILD_TYPE=Release && cmake --build build_web   # Windows: build_web.bat
+python tools/web_site.py           # build_web/site: 페이지 + epichearts.js/.wasm/.data
+python tools/web_serve.py 8765     # COOP/COEP 헤더를 붙여 로컬에서 연다
+```
+
+`main`에 푸시하면 `.github/workflows/pages.yml`이 원본 없는 러너에서 빌드해 Pages에 올린다.
+네이티브로 인터프리터를 확인하려면 `build_interp.bat`(32비트, `-DEH_INTERP=ON`). 시험 스위치:
+`EH_ACCEL=0`(네이티브 루틴 끔), `-DEH_ACCEL_CHECK` 빌드의 `EH_ACCEL_CHECK=1`(호출마다 원본과 결과 비교),
+`-DEH_IPROF` 빌드(함수별 명령 수 프로파일). 웹 페이지에서는 `?env=EH_BOT=1,EH_FPS=1`처럼 같은 스위치를 넘긴다.
 
 ## 구조
 

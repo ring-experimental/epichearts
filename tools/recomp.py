@@ -345,6 +345,11 @@ HOOKS = {0x0b421c,  # cCreature::SubHp (test-mode damage floor, EH_TESTBUFF)
          0x0c1384, 0x0c1510,  # cRainEffect::CreateRain / Draw (512-px rain repeated across wider views, hooks.c)
          0x11a45c, 0x142d40, 0x1437d0, 0x1437f0, 0x157368, 0x0f4014, 0x11e574,  # world-frame capture (ui/capture.cpp)
          0x141b84, 0x141c14, 0x1422bc, 0x141ccc, 0x144608, 0x15b8dc, 0x14958c}  # interface draw recording (ui/autoform.cpp)
+# the interpreter build (src/interp.c, the web build) takes the same list from src/hooks.h: they must agree
+import re as _re
+_HDR = {int(v, 16) for v in _re.findall(r'X\(([0-9a-f]{6})\)', open(os.path.join(ROOT, 'src', 'hooks.h')).read())}
+if _HDR != HOOKS:
+    sys.exit('src/hooks.h and HOOKS differ: only in hooks.h %s, only here %s' % (sorted(map(hex, _HDR - HOOKS)), sorted(map(hex, HOOKS - _HDR))))
 
 
 def fname(a):

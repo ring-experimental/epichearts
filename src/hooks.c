@@ -18,7 +18,7 @@
  * segment crossing the threshold; Salamander 3+2, HynWarrior 0xa1 3+2+2.
  */
 #include "host.h"
-#include "gen/gen.h"
+#include "hooks.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

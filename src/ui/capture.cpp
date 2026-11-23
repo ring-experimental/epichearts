@@ -21,7 +21,7 @@
 
 extern "C" {
 #include "host.h"
-#include "gen/gen.h"
+#include "../hooks.h"
 }
 
 namespace capture {

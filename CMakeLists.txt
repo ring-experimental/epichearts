@@ -6,6 +6,14 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 list(PREPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
 
+# ---- web (Emscripten): threads for the game and the original's own threads (SharedArrayBuffer; the page's service
+# worker makes it cross-origin isolated, web/sw.js)
+if(EMSCRIPTEN)
+  add_compile_options(-pthread)
+  add_link_options(-pthread)
+  set(SDL_PTHREADS ON CACHE BOOL "" FORCE) # off by default on Emscripten: SDL_CreateThread would fail
+endif()
+
 # ---- third party
 set(SDL_SHARED OFF CACHE BOOL "" FORCE)
 set(SDL_STATIC ON CACHE BOOL "" FORCE)
@@ -25,15 +33,23 @@ set(RMLUI_PRECOMPILED_HEADERS OFF CACHE BOOL "" FORCE)
 set(RMLUI_FONT_ENGINE "freetype" CACHE STRING "" FORCE)
 add_subdirectory(third_party/rmlui EXCLUDE_FROM_ALL)
 
-# ---- recompiled original code
-file(GLOB GEN_SRC CONFIGURE_DEPENDS ${CMAKE_SOURCE_DIR}/src/gen/gen_*.c)
-add_library(gen STATIC ${GEN_SRC})
-target_include_directories(gen PRIVATE src)
-if(MSVC)
-  # generated code: huge functions, many labels
-  target_compile_options(gen PRIVATE /O1 /bigobj /wd4102 /wd4101 /wd4189 /wd4244 /W1)
-else()
-  target_compile_options(gen PRIVATE -O1 -w -fno-strict-aliasing -fwrapv)
+# ---- the original's code
+# EH_INTERP=OFF: recompiled to C (src/gen, made from the original by tools/recomp.py; never published)
+# EH_INTERP=ON : interpreted at run time from the original the player supplies (src/interp.c; the web build)
+option(EH_INTERP "run the original's code in the interpreter instead of the recompiled src/gen" OFF)
+if(EMSCRIPTEN)
+  set(EH_INTERP ON CACHE BOOL "" FORCE)
+endif()
+if(NOT EH_INTERP)
+  file(GLOB GEN_SRC CONFIGURE_DEPENDS ${CMAKE_SOURCE_DIR}/src/gen/gen_*.c)
+  add_library(gen STATIC ${GEN_SRC})
+  target_include_directories(gen PRIVATE src)
+  if(MSVC)
+    # generated code: huge functions, many labels
+    target_compile_options(gen PRIVATE /O1 /bigobj /wd4102 /wd4101 /wd4189 /wd4244 /W1)
+  else()
+    target_compile_options(gen PRIVATE -O1 -w -fno-strict-aliasing -fwrapv)
+  endif()
 endif()
 
 # ---- host (platform layer + modern UI)
@@ -44,7 +60,21 @@ set(HOST_SRC
   src/ui/talkctl.cpp src/ui/help.cpp src/ui/bagbuy.cpp src/ui/qbox.cpp src/ui/smithy.cpp src/ui/farm.cpp src/ui/skillbook.cpp src/ui/detail.cpp src/ui/collection.cpp src/ui/hotslot.cpp
   third_party/rmlui/Backends/RmlUi_Renderer_GL3.cpp third_party/rmlui/Backends/RmlUi_Platform_SDL.cpp)
 
-if(ANDROID)
+if(EMSCRIPTEN)
+  # the page (web/) loads epichearts.js / .wasm / .data; main runs when the player's APK has been handed over
+  add_executable(epichearts ${HOST_SRC})
+  set(HOST_TARGET epichearts)
+  target_compile_definitions(epichearts PRIVATE RMLUI_PLATFORM_EMSCRIPTEN)
+  target_link_options(epichearts PRIVATE
+    -sMIN_WEBGL_VERSION=2 -sMAX_WEBGL_VERSION=2
+    -sALLOW_MEMORY_GROWTH=1 -sINITIAL_MEMORY=268435456 -sMAXIMUM_MEMORY=2147483648
+    -sSTACK_SIZE=4194304 -sDEFAULT_PTHREAD_STACK_SIZE=4194304 -sPTHREAD_POOL_SIZE=6
+    -sINVOKE_RUN=0 -sEXIT_RUNTIME=0 -sFORCE_FILESYSTEM=1 -lidbfs.js
+    -sEXPORTED_FUNCTIONS=_main,_malloc,_free,_eh_set_apk
+    -sEXPORTED_RUNTIME_METHODS=callMain,FS,IDBFS,HEAPU8,ENV
+    -sENVIRONMENT=web,worker -sMODULARIZE=0 --profiling-funcs
+    --preload-file ${CMAKE_SOURCE_DIR}/data/ui@/data/ui)
+elseif(ANDROID)
   add_library(main SHARED ${HOST_SRC})
   set(HOST_TARGET main)
   target_link_libraries(main PRIVATE GLESv3 EGL log android mediandk)
@@ -67,4 +97,10 @@ if(MSVC)
 else()
   target_compile_options(${HOST_TARGET} PRIVATE -fno-strict-aliasing -fwrapv -Wno-unused-parameter)
 endif()
-target_link_libraries(${HOST_TARGET} PRIVATE gen SDL3::SDL3-static RmlUi::RmlUi RmlUi::Debugger freetype)
+if(EH_INTERP)
+  target_sources(${HOST_TARGET} PRIVATE src/interp.c src/accel.c)
+  target_compile_definitions(${HOST_TARGET} PRIVATE EH_INTERP)
+else()
+  target_link_libraries(${HOST_TARGET} PRIVATE gen)
+endif()
+target_link_libraries(${HOST_TARGET} PRIVATE SDL3::SDL3-static RmlUi::RmlUi RmlUi::Debugger freetype)

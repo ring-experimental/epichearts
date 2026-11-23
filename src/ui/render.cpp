@@ -21,7 +21,7 @@ static GLint u_src_size, u_rect, u_tex, u_sharp;
 static bool g_sharp = true;
 void set_sharp(bool on) { if (g_sharp != on) { g_sharp = on; g_dirty = true; } }
 
-#if defined(__ANDROID__)
+#if defined(__ANDROID__) || defined(__EMSCRIPTEN__)
 #define GLSL_HDR "#version 300 es\nprecision highp float;\n"
 #else
 #define GLSL_HDR "#version 330 core\n"

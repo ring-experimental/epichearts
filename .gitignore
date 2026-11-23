@@ -5,6 +5,8 @@
 /build-android/
 /build_dlg/
 /build_save/
+/build_interp/
+/build_iprof/
 /dist/
 
 # large inputs / third-party (official sources, kept outside git)
@@ -49,3 +51,6 @@ __pycache__/
 
 # 기계별 설정
 /.claude/settings.local.json
+/.toolchain/
+/build_web/
+/.claude/launch.json
