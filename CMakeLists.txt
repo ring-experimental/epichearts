@@ -70,8 +70,8 @@ if(EMSCRIPTEN)
     -sALLOW_MEMORY_GROWTH=1 -sINITIAL_MEMORY=268435456 -sMAXIMUM_MEMORY=2147483648
     -sSTACK_SIZE=4194304 -sDEFAULT_PTHREAD_STACK_SIZE=4194304 -sPTHREAD_POOL_SIZE=6
     -sINVOKE_RUN=0 -sEXIT_RUNTIME=0 -sFORCE_FILESYSTEM=1 -lidbfs.js
-    -sEXPORTED_FUNCTIONS=_main,_malloc,_free,_eh_set_apk
-    -sEXPORTED_RUNTIME_METHODS=callMain,FS,IDBFS,HEAPU8,ENV
+    -sEXPORTED_FUNCTIONS=_main,_malloc,_free,_eh_set_apk,_eh_save_picked
+    -sEXPORTED_RUNTIME_METHODS=callMain,FS,IDBFS,HEAPU8,ENV,UTF8ToString,stringToNewUTF8
     -sENVIRONMENT=web,worker -sMODULARIZE=0 --profiling-funcs
     --preload-file ${CMAKE_SOURCE_DIR}/data/ui@/data/ui)
 elseif(ANDROID)

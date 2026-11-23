@@ -60,6 +60,15 @@
   <div class="box"><h1>화면을 가로로 돌려 주세요</h1><p>게임 화면은 가로에 맞춰 넓게 그려집니다.</p></div>
 </div>
 
+<div id="picker" class="screen over" hidden>
+  <div class="box">
+    <h1>기록 가져오기</h1>
+    <p>내보내 둔 기록 파일(<code>.ehsave</code>)이나 원본 저장 파일(<code>epic19.png</code>, <code>.b01</code>, <code>.b02</code>)을 고르세요.</p>
+    <label class="file">파일 고르기<input id="savefile" type="file" accept=".ehsave,.png,.b01,.b02"></label>
+    <button id="cancel" class="plain">취소</button>
+  </div>
+</div>
+
 <div id="ended" class="screen over" hidden>
   <div class="box">
     <h1>게임을 종료했습니다</h1>

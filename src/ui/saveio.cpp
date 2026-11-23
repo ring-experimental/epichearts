@@ -1,4 +1,7 @@
 // Save slot export / import for the title screen (saveio.h).
+#ifdef __EMSCRIPTEN__
+#include <emscripten.h>
+#endif
 //
 // How the original keeps saves (Ghidra addresses; recompiled vaddr = Ghidra - 0x10000):
 //  - epic19.png is the whole save: u32 9, u32 size, 0x24-byte key block, then 4 chunks {u32 id, u32 version,
@@ -286,8 +289,31 @@ static bool test_answer(const std::function<void(std::string)> &cb) {
     return true;
 }
 
+#ifdef __EMSCRIPTEN__
+// Browser: no native dialogs. Export writes the file into the in-memory /tmp and the page downloads it
+// (web/app.js Module.downloadFile). Import asks the page for a file (Module.pickSaveFile: its own picker screen, so
+// the file chooser opens from a click on the page); the page copies the chosen file into /tmp and answers here.
+static std::function<void(std::string)> *g_web_open;
+extern "C" EMSCRIPTEN_KEEPALIVE void eh_save_picked(const char *path) {
+    auto *cb = g_web_open;
+    g_web_open = nullptr;
+    if (!cb) return;
+    std::string p = path ? path : "";
+    to_main([cb, p] { (*cb)(p); delete cb; });
+}
+#endif
+
 void pick_save(const std::string &default_name, std::function<void(std::string)> cb) {
     if (test_answer(cb)) return;
+#ifdef __EMSCRIPTEN__
+    {
+        std::string path = "/tmp/" + default_name;
+        cb(path); // the caller writes the file there
+        EM_ASM({ if (Module.downloadFile) Module.downloadFile(UTF8ToString($0), UTF8ToString($1)); }, path.c_str(),
+               default_name.c_str());
+        return;
+    }
+#endif
     // Android: SDLActivity.showFileDialog -> ACTION_CREATE_DOCUMENT; SDL does not hand the name to SAF, EpicActivity
     // .startActivityForResult picks it up from this hint
     SDL_SetHint("EH_DOCUMENT_NAME", default_name.c_str());
@@ -297,6 +323,12 @@ void pick_save(const std::string &default_name, std::function<void(std::string)>
 
 void pick_open(std::function<void(std::string)> cb) {
     if (test_answer(cb)) return;
+#ifdef __EMSCRIPTEN__
+    delete g_web_open; // a picker left open by an earlier request is answered by this one
+    g_web_open = new std::function<void(std::string)>(std::move(cb));
+    EM_ASM({ if (Module.pickSaveFile) Module.pickSaveFile(); else Module._eh_save_picked(0); });
+    return;
+#endif
     // Android: ACTION_OPEN_DOCUMENT; "ehsave" has no MIME type, so SAF lists all files
     SDL_ShowOpenFileDialog(dialog_done, new std::function<void(std::string)>(std::move(cb)), ui::window, OPEN_FILTERS, 3,
                            nullptr, false);

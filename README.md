@@ -53,8 +53,7 @@ python tools/web_serve.py 8765     # COOP/COEP 헤더를 붙여 로컬에서 연
 | 경로 | 내용 |
 |---|---|
 | `tools/recomp.py` | 리컴파일러. ELF + Ghidra 흐름 정보(`work/flow.txt`) → `src/gen/*.c` |
-| `ghidra_scripts/ExportFlow.java` | 명령어 목록·함수 범위·switch 대상 추출 |
-| `ghidra_scripts/DumpAll.java` | 전체 디컴파일 덤프(`work/decomp/<클래스>.c`) — 분석용 (덤프는 저장소에 없음, 필요하면 다시 생성) |
+| `ghidra_scripts/ExportFlow.java` | 명령어 목록·함수 범위·switch 대상 추출(`work/flow.txt`, `tools/recomp.py`의 입력). 저장소에 있는 Ghidra 스크립트는 이것 하나 |
 | `ghidra_proj/` | 원본 .so의 Ghidra 분석 프로젝트 |
 | `tools/bootstrap.py` | 처음부터 재현: APK에서 .so 추출 → `src/gen` 재생성 → 빌드 |
 | `src/loader.c` | .so 이미지 매핑, 재배치, 게스트 주소 → 함수 디스패치, 프레임 언와인딩 |

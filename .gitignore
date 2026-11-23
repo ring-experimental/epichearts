@@ -54,3 +54,8 @@ __pycache__/
 /.toolchain/
 /build_web/
 /.claude/launch.json
+
+# Ghidra: only the script the build needs is shared (ExportFlow.java -> work/flow.txt for tools/recomp.py);
+# the analysis scripts stay local
+/ghidra_scripts/*
+!/ghidra_scripts/ExportFlow.java

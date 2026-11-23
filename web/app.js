@@ -137,6 +137,22 @@ var Module = {
   print: text => console.log(text),
   printErr: text => console.warn(text),
   onAbort: what => { $('setup').hidden = false; $('need').hidden = $('ready').hidden = true; status('오류로 멈췄습니다: ' + what, true); },
+  // save export (src/ui/saveio.cpp): the file the game wrote into /tmp becomes a download
+  downloadFile: (path, name) => {
+    const fs = Module.FS;
+    if (!fs.analyzePath(path).exists) return;
+    const url = URL.createObjectURL(new Blob([fs.readFile(path)], { type: 'application/octet-stream' }));
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = name;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 10000);
+    fs.unlink(path);
+  },
+  // save import: the page's picker screen; the chosen file goes to /tmp and the game reads it from there
+  pickSaveFile: () => { $('picker').hidden = false; },
   onGameQuit: () => { saveSync(); document.body.classList.remove('playing'); $('ended').hidden = false; },
 };
 // test switches of the desktop build (EH_BOT, EH_FPS, ...): ?env=EH_BOT=1,EH_FPS=1
@@ -194,4 +210,21 @@ $('source').addEventListener('change', e => { if (e.target.files[0]) choose(e.ta
 $('start').addEventListener('click', start);
 $('forget').addEventListener('click', async () => { await apkPut(null); show(false); });
 $('again').addEventListener('click', () => location.reload());
+const IMPORT_PATH = '/tmp/import.bin';
+function picked(path) {
+  $('picker').hidden = true;
+  $('canvas').focus();
+  if (!path) { Module._eh_save_picked(0); return; }
+  const p = Module.stringToNewUTF8(path);
+  Module._eh_save_picked(p);
+  Module._free(p);
+}
+$('savefile').addEventListener('change', async e => {
+  const f = e.target.files[0];
+  e.target.value = '';
+  if (!f) { picked(''); return; }
+  Module.FS.writeFile(IMPORT_PATH, new Uint8Array(await f.arrayBuffer()));
+  picked(IMPORT_PATH);
+});
+$('cancel').addEventListener('click', () => picked(''));
 boot().catch(e => status(String(e), true));
