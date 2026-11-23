@@ -1,0 +1,29 @@
+# title screen buttons and the new-game flow (no save loaded)
+wait 10000
+snap title
+tap 432 293      # options (gear)
+wait 2000
+snap t_options
+tap 483 20       # back arrow
+wait 1500
+snap t_after_options
+tap 480 293      # help (?)
+wait 2000
+snap t_help
+tap 483 20       # back arrow
+wait 1500
+tap 256 168      # Game Start
+wait 2500
+snap saves
+tap 256 248      # 새로하기 (new game)
+wait 3000
+snap newgame
+tap 59 268       # character 1
+wait 2000
+snap char1
+tap 143 268      # character 2
+wait 2000
+snap char2
+tap 223 268      # character 3
+wait 2000
+snap char3

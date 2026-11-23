@@ -1,0 +1,29 @@
+# menu pages from a loaded save (slot 2): every page of the bag/menu panel
+wait 10000
+snap title
+tap 256 168      # Game Start
+wait 2500
+snap saves
+tap 256 184      # second save slot (Lv 14)
+wait 9000
+snap field_popup
+tap 256 160      # dismiss mission popup
+wait 2000
+tap 19 20        # bag (top-left) -> character page
+wait 2000
+snap m_character
+tap 442 30
+wait 1500
+snap m_btn2
+tap 368 88
+wait 1500
+snap m_btn3
+tap 442 88
+wait 1500
+snap m_btn4
+tap 368 148
+wait 1500
+snap m_btn5
+tap 442 266      # close
+wait 1500
+snap closed

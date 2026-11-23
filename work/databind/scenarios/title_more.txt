@@ -1,0 +1,46 @@
+# save: lv14
+# title export / import pick modes (saveio): the cards turn into pick targets (export: the empty slot off, import: all),
+# the delete buttons give way to go icons, and the focus goes to the first selectable card each time the cards change.
+# No card is picked in a pick mode (that opens the system file dialog).
+ui dev kbm
+wait 13000
+ui act t_start
+wait 1000
+dump titlex__slots
+ui key Down
+wait 300
+dump titlex__slots_down
+ui act x_export
+wait 800
+dump titlex__pick_x
+ui key Down
+wait 300
+dump titlex__pick_x_down
+ui key Down
+wait 300
+dump titlex__pick_x_down2
+ui act x_import
+wait 800
+dump titlex__pick_i
+ui key Down
+wait 300
+ui key Down
+wait 300
+dump titlex__pick_i_down2
+ui key Escape
+wait 800
+dump titlex__pick_off
+ui act x_export
+wait 800
+ui act x_export
+wait 800
+dump titlex__pick_x_toggled
+ui act del1
+wait 600
+dump titlex__del1
+ui act c_no
+wait 600
+dump titlex__del1_no
+ui key Escape
+wait 1000
+dump titlex__closed

@@ -1,0 +1,32 @@
+# compare.py masks: one Python regex per line, the match becomes <V>. Lines starting with "#" are comments.
+# Found by recording the baseline twice (golden vs probe/golden_b, 2026-10-21).
+# HP regenerates while the scenario waits: state line and HUD value / bar widths
+hp \d+/\d+
+(?<=span#hpv\.val) \(\d+,\d+ \d+x\d+\) "\d+"
+(?<=div\.ghost) \(\d+,\d+ \d+x\d+\)
+(?<=div\.fill) \(\d+,\d+ \d+x\d+\)
+# gold after a QBox draw (the reward is rolled locally, random): state line, menu header, HUD gold
+gold \d+
+(?<=span#gold) \(\d+,\d+ \d+x\d+\) "[\d,]+"
+(?<=span#goldv) \(\d+,\d+ \d+x\d+\) "[\d,]+"
+# dumps whose content depends on the QBox reward (bag contents, reward text)
+@file qbox/done*
+@file qbox/closed1.*
+@file dialogs/qconfirm2.*
+# autoscreen world map: the slide-in images and the cursor are the original's draws replayed per frame; the dump
+# catches them at a wall-clock moment (uishot wait), so their x/y move by a few px between runs (diffs/batch0.md 0a)
+@file autoscreen/worldmap[0-9].*
+# talkctl AUTO gauge: its width is the wall-clock share of the page's reading delay (diffs/batch0.md 0c)
+(?<=div#autofill) \(\d+,\d+ \d+x\d+\)
+# charselect class sprites: the selected card shows the original's live animation frame (diffs/batch0.md 0c)
+(?<=img#spr\d) \(\d+,\d+ \d+x\d+\)
+# menu character page HP / MP cells ("378 / 410"): regenerate while the scenario waits (diffs/batch3.md)
+(?<=span\.v) \(\d+,\d+ \d+x\d+\) "\d+ / \d+"
+# world map pictures behind the linkstone choice (dialogs_more ls_*): the same slide-in draws as autoscreen/worldmap
+# above, caught at a wall-clock moment (only the world map has img.af-s; diffs/batch4.md 0)
+(?<=img\.af-s) \(\d+,\d+ \d+x\d+\)
+# smithy refine progress bar: .rfill slides by a CSS animation (0.9s infinite; diffs/batch4.md 0, 1): its position, and
+# the !OUTSIDE it gets in the part of the cycle where it sticks out of the bar
+(?<=div\.rfill) \(\d+,\d+ \d+x\d+\)(?: !OUTSIDE)?
+# the dump's closing issue count: every issue is also flagged on its own element / !OVERLAP line, which stays compared
+^issues \d+$

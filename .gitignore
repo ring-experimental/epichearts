@@ -1,0 +1,51 @@
+# build outputs
+/build/
+/build64/
+/build64u/
+/build-android/
+/build_dlg/
+/build_save/
+/dist/
+
+# large inputs / third-party (official sources, kept outside git)
+/epichearts.apk
+/ghidra_proj/
+/third_party/
+/save/
+
+# work: only the data-binding prep folder is tracked
+/work/*
+!/work/databind/
+
+*.orig
+__pycache__/
+
+# data-binding prep: per-run scratch (run_golden.py out/, probe runs)
+/work/databind/out/
+/work/databind/probe/
+/work/databind/current*/
+/work/databind/perf/out_*/
+
+# ---- 원본과 원본 파생물: 공개 저장소에 넣지 않는다 (로컬에서 tools/bootstrap.py로 다시 만든다)
+*.apk
+*.so
+# 원본 .so를 기계 번역한 C (tools/recomp.py)
+/src/gen/
+# 원본 .so의 심볼 목록 (tools/gen_syms.py)
+/syms_dem.txt
+# 원작 APK 아이콘으로 만든 앱 아이콘 (tools/make_icons.py)
+/android/res/mipmap-*/
+/src/app.ico
+# 원본이 기기에서 만든 글리프 캐시 (tools/pull_glyphcache.sh)
+/data/flfoo_android.png
+# 원본 필드 데이터에서 뽑은 출구 그래프 (EH_WARPSCAN)
+/data/field_exits.txt
+# 원본 세이브와 원본 실행 화면·덤프
+/tests/saves/
+/work/databind/golden*/
+/*.png
+/ghidra_*.txt
+/ghidra_*.log
+
+# 기계별 설정
+/.claude/settings.local.json

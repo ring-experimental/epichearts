@@ -1,0 +1,49 @@
+<rml>
+<head>
+<title>farm</title>
+<link type="text/rcss" href="theme.rcss"/>
+<style>
+/* monster farm (farm.cpp, replaces cFormMonsterFarm 0x1F): capture / feeding / hatching pages */
+body { display: none; }
+body.on { display: block; animation: 0.18s cubic-out 1 fadein; }
+@keyframes fadein { from { opacity: 0; } to { opacity: 1; } }
+#scrim { position: absolute; left: 0; top: 0; right: 0; bottom: 0; background-color: #05060cd0; }
+#main { position: absolute; left: 50%; width: 820dp; margin-left: -410dp; top: 28dp; bottom: 28dp; padding: 26dp 30dp; box-sizing: border-box; }
+#kicker { font-size: 12dp; font-weight: 800; letter-spacing: 3dp; color: #ffb547; }
+#title { font-size: 28dp; font-weight: 800; color: #ffffff; margin-top: 4dp; }
+#tr { position: absolute; right: 30dp; top: 30dp; }
+#tr .btn { padding: 8dp 14dp; font-size: 14dp; }
+#tr .icon { margin-right: 6dp; }
+#list { position: absolute; left: 30dp; right: 30dp; top: 100dp; bottom: 50dp; overflow-y: auto; padding-right: 6dp; }
+.row { position: relative; height: 76dp; margin-bottom: 8dp; border-radius: 16dp; cursor: pointer; background-color: rgba(255,255,255,7); border: 1dp rgba(255,255,255,16);
+       transition: background-color border-color 0.1s cubic-out; }
+.row:hover { background-color: rgba(255,255,255,13); }
+.row.focus { background-color: rgba(255,255,255,16); border-color: rgba(255,209,102,150); }
+.row .ic { position: absolute; left: 12dp; top: 10dp; width: 56dp; height: 56dp; border-radius: 12dp; background-color: rgba(255,255,255,9); }
+.row .ic img { position: absolute; left: 4dp; top: 4dp; width: 48dp; height: 48dp; }
+.row .nm { position: absolute; left: 84dp; top: 13dp; font-size: 17dp; font-weight: 800; color: #ffffff; }
+.row .cap { position: absolute; left: 84dp; top: 44dp; width: 220dp; height: 18dp; }
+.row .bar { position: absolute; left: 0; top: 6dp; width: 150dp; height: 6dp; border-radius: 3dp; background-color: rgba(255,255,255,20); }
+.row .bar .fill { height: 6dp; border-radius: 3dp; decorator: linear-gradient(to right, #6fd3ff, #4c8dff); }
+.row.full .bar .fill { decorator: linear-gradient(to right, #ffd166, #ff9f5a); }
+.row .cap .v { position: absolute; left: 160dp; top: 0; font-size: 12dp; font-weight: 800; color: #aab3d6; }
+.row .st { position: absolute; left: 320dp; top: 28dp; right: 130dp; font-size: 14dp; font-weight: 600; color: #c9d1ee; white-space: nowrap; overflow: hidden; }
+.row .st .fi { width: 22dp; height: 22dp; vertical-align: -6dp; margin-right: 6dp; }
+.row .st .tm { color: #ffd166; font-weight: 800; }
+.row .go { position: absolute; right: 16dp; top: 22dp; height: 32dp; line-height: 32dp; padding: 0 14dp; border-radius: 10dp; font-size: 14dp; font-weight: 800;
+           color: #1c0b10; decorator: linear-gradient(to bottom, #ffd59a, #ffad66); }
+.none { padding: 80dp 0; text-align: center; font-size: 15dp; color: #6b7394; }
+#hint { position: absolute; left: 30dp; bottom: 16dp; font-size: 13dp; color: #8892b6; }
+#hint span { margin-right: 16dp; }
+</style>
+</head>
+<body data-block="1" data-model="farm">
+<div id="scrim"/>
+<div id="main" class="glass-strong blur">
+  <div id="kicker">{{kicker}}</div><div id="title" data-rml="title"></div>
+  <div id="tr"><span class="btn" data-act="close" data-nonav="1"><span class="icon">&#xe1b2;</span>나가기</span></div>
+  <div id="list"><div class="row" data-for="r : rows" data-class-sel="r.sel" data-class-full="r.full" data-attr-data-act="r.act"><div class="ic"><img data-attr-src="r.src"/></div><div class="nm" data-rml="r.nm"></div><div class="cap"><div class="bar"><div class="fill" data-style-width="r.pct"></div></div><span class="v">{{r.cap}}</span></div><div class="st" data-rml="r.st"></div><span class="go" data-if="r.go != ''">{{r.go}}</span></div><div class="none" data-if="rows.size == 0" data-rml="empty"></div></div>
+  <div id="hint" data-rml="hint"></div>
+</div>
+</body>
+</rml>

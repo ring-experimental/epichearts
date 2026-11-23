@@ -1,0 +1,57 @@
+# save: lv14
+# menu paths the menu scenario does not cover (data-binding batch 5; baseline golden_menux from the pre-migration
+# menu code 51bdbf0): skill life tab and back, bag category chips, a quickslot registration toast, the picker reopened
+# with the slot filled, the save toast, the touch device on the skill page
+@prefix
+ui dev gold 100000
+wait 1500
+ui act menu
+wait 1500
+ui act tab3
+wait 800
+ui act skt2
+wait 600
+dump menu__sk_life
+ui act skt0
+wait 600
+dump menu__sk_back
+ui act tab1
+wait 800
+ui act cat2
+wait 600
+dump menu__cat2
+ui act cat3
+wait 600
+dump menu__cat3
+ui act cat2
+wait 600
+ui act it0
+wait 400
+ui act inv_hot
+wait 400
+ui act pk7
+wait 500
+dump menu__pk_toast
+ui act inv_hot
+wait 400
+dump menu__picker2
+ui act pk_close
+wait 400
+ui act tab8
+wait 800
+ui act sys_save
+wait 1200
+dump menu__save_toast
+ui act close
+wait 1500
+ui dev touch
+wait 300
+ui act menu
+wait 1500
+ui act tab3
+wait 800
+ui act sk2
+wait 400
+dump menu__touch_sk2
+ui act close
+wait 1500

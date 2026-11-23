@@ -1,0 +1,97 @@
+<rml>
+<head>
+<title>talkctl</title>
+<link type="text/rcss" href="theme.rcss"/>
+<style>
+/* story dialogue controls (talkctl.cpp): SKIP / AUTO / LOG at the top right, and the scene's dialogue log */
+body { pointer-events: none; display: none; }
+body.on { display: block; }
+
+#bar { position: absolute; right: 20dp; top: 18dp; white-space: nowrap; animation: 0.2s cubic-out 1 barin; }
+@keyframes barin { from { opacity: 0; transform: translateY(-8dp); } to { opacity: 1; transform: translateY(0dp); } }
+body.log #bar { display: none; }
+body.crawl #w_log, body.crawl #w_auto { display: none; } /* the crawl: FAST / SKIP only */
+.tbtn {
+    display: inline-block; position: relative;
+    height: 40dp; line-height: 40dp; padding: 0 16dp 0 13dp; margin-left: 12dp;
+    border-radius: 12dp; overflow: hidden;
+    font-size: 13dp; font-weight: 800; letter-spacing: 1.5dp; color: #eef1fb;
+    background-color: rgba(13,16,32,200);
+    border: 1dp rgba(255,255,255,34);
+    box-shadow: rgba(0,0,0,110) 0dp 6dp 16dp 0dp;
+    transition: background-color transform 0.12s cubic-out;
+    pointer-events: auto; cursor: pointer;
+}
+.tbtn .icon { font-size: 16dp; margin-right: 7dp; color: #ffd166; }
+.tbtn:hover { background-color: rgba(40,46,84,225); transform: translateY(-1dp); }
+.tbtn:active { transform: scale(0.95); }
+.tbtn.active { color: #1c0b10; decorator: linear-gradient(to bottom, #ffd59a, #ffad66); border-color: rgba(255,220,190,160); }
+.tbtn.active .icon { color: #1c0b10; }
+.tbtn.off { opacity: 0.35; pointer-events: none; }
+/* AUTO: reading-delay progress along the bottom edge */
+#autofill { position: absolute; left: 0; bottom: 0; height: 3dp; width: 0; background-color: #1c0b10; opacity: 0.55; }
+/* key / button hint on the corner, as on the HUD buttons (the badge sits outside the clipped button) */
+.kwrap { display: inline-block; position: relative; }
+.kwrap .k { position: absolute; right: -10dp; top: -11dp; transform: scale(0.74); }
+.kwrap .k .glyph { background-color: #ffffff; color: #0c0f1d; font-weight: 800; box-shadow: rgba(0,0,0,160) 0dp 2dp 4dp 0dp; }
+.kwrap .k .glyph.pad, .kwrap .k .glyph.bumper, .kwrap .k .glyph.dpad { background-color: #3a4166; color: #e8ecff; }
+.kwrap .k .glyph.xa { background-color: #2fb24c; color: #ffffff; }
+body.touchin .k { display: none; }
+
+/* advance target for Space / Enter / pad A while the controls own the keys (talkctl.cpp) */
+#adv { position: absolute; left: 0; top: 0; width: 0; height: 0; }
+body.log #adv { display: none; }
+
+/* ---- skip curtain: the skipped scene runs unpaced behind it (talkctl.cpp) ---- */
+#skipcur { position: absolute; left: 0; top: 0; right: 0; bottom: 0; background-color: rgba(5,6,12,238); display: none; pointer-events: auto; }
+body.skip #skipcur { display: block; animation: 0.12s linear-out 1 curin; }
+body.skip #bar, body.skip #adv { display: none; }
+@keyframes curin { from { opacity: 0; } to { opacity: 1; } }
+#skipin { position: absolute; left: 0; right: 0; top: 50%; margin-top: -34dp; text-align: center; }
+#skipspin { display: inline-block; font-family: lucide; font-size: 30dp; color: #ffd166; animation: 1.1s linear infinite spin; }
+@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+#skiptxt { margin-top: 12dp; font-size: 15dp; font-weight: 800; letter-spacing: 2dp; color: #c9d1ee; }
+
+/* ---- log ---- */
+#scrim { position: absolute; left: 0; top: 0; right: 0; bottom: 0; background-color: #05060cc0; display: none; pointer-events: auto; }
+#logwin {
+    position: absolute; left: 50%; width: 780dp; margin-left: -390dp; top: 36dp; bottom: 36dp;
+    display: none; pointer-events: auto;
+}
+body.log #scrim, body.log #logwin { display: block; }
+body.log #logwin { animation: 0.2s cubic-out 1 login; }
+@keyframes login { from { opacity: 0; transform: translateY(12dp); } to { opacity: 1; transform: translateY(0dp); } }
+#loghead { position: absolute; left: 30dp; right: 24dp; top: 20dp; height: 40dp; }
+#loghead .kick { font-size: 12dp; font-weight: 800; letter-spacing: 3dp; color: #ffb547; }
+#loghead .ttl { font-size: 21dp; font-weight: 800; color: #ffffff; margin-top: 2dp; }
+#logclose {
+    position: absolute; right: 0; top: 2dp; width: 40dp; height: 40dp; line-height: 40dp; text-align: center;
+    border-radius: 12dp; font-family: lucide; font-size: 18dp; color: #eef1fb; cursor: pointer;
+    background-color: rgba(255,255,255,14); border: 1dp rgba(255,255,255,30);
+}
+#logclose:hover, #logclose.focus { background-color: rgba(255,255,255,34); border-color: #ffd166; }
+#loglist { position: absolute; left: 14dp; right: 14dp; top: 82dp; bottom: 14dp; overflow-y: auto; padding: 0 16dp 8dp 16dp; }
+#logsep { position: absolute; left: 30dp; right: 30dp; top: 74dp; height: 1dp; background-color: rgba(255,255,255,22); }
+.entry { padding: 10dp 0 10dp 0; }
+.entry .who { display: block; font-size: 14dp; font-weight: 800; color: #ffd166; margin-bottom: 3dp; }
+.entry .say { display: block; font-size: 18dp; line-height: 29dp; color: #c9d1ee; }
+.entry.cont { padding-top: 0; }
+.entry.now .say { color: #ffffff; }
+.entry.now { border-left: 3dp #ffb547; padding-left: 12dp; margin-left: -15dp; }
+#logempty { padding: 40dp 0; text-align: center; font-size: 16dp; color: #8d96ba; }
+</style>
+</head>
+<body data-model="talkctl" data-class-log="log_open" data-class-crawl="crawl" data-class-skip="skip_cur">
+<div id="adv" data-act="advance"/>
+<div id="bar">
+  <span class="kwrap" id="w_log"><div class="tbtn" id="b_log" data-act="tlog" data-nonav="1" data-class-active="log_open"><span class="icon">&#xe463;</span>LOG</div><span class="k" id="k_log" data-rml="k_log"></span></span><span class="kwrap" id="w_auto"><div class="tbtn" id="b_auto" data-act="tauto" data-nonav="1" data-class-active="autoplay"><span class="icon">&#xe13c;</span>AUTO<div id="autofill" data-style-width="autofill"></div></div><span class="k" id="k_auto" data-rml="k_auto"></span></span><span class="kwrap"><div class="tbtn" id="b_ffwd" data-act="tffwd" data-nonav="1" data-class-active="ffwd_on" data-class-off="locked"><span class="icon">&#xe0bd;</span>FAST</div><span class="k" id="k_ffwd" data-rml="k_ffwd"></span></span><span class="kwrap"><div class="tbtn" id="b_skip" data-act="tskip" data-nonav="1" data-class-active="skip_on" data-class-off="locked"><span class="icon">&#xe160;</span>SKIP</div><span class="k" id="k_skip" data-rml="k_skip"></span></span>
+</div>
+<div id="skipcur" data-block="1"><div id="skipin"><div id="skipspin">&#xe109;</div><div id="skiptxt">건너뛰는 중</div></div></div>
+<div id="scrim" data-act="tlogclose" data-nonav="1" data-block="1"/>
+<div id="logwin" class="glass-strong blur" data-block="1">
+  <div id="loghead"><div class="kick">LOG</div><div class="ttl">대화 기록</div><div id="logclose" data-act="tlogclose">&#xe1b2;</div></div>
+  <div id="logsep"/>
+  <div id="loglist"><div class="entry" data-for="e : log" data-class-cont="e.cont" data-class-now="e.now"><span class="who" data-if="e.head" data-rml="e.who"></span><span class="say" data-rml="e.say"></span></div><div id="logempty" data-if="log.size == 0">아직 대사가 없습니다</div></div>
+</div>
+</body>
+</rml>

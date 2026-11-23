@@ -1,0 +1,50 @@
+# save: lv14
+# keymap: device page switch (the focus follows its action into the other list, data-for reuses the rows by index),
+# a key swap with its toast, reset. Needs the gamepad tab (a pad connected to this PC). Dumps kmdev__* have no
+# golden counterpart (it opens on the pad page when no key was typed before: km_kb first): read the values (focus row, tab .on, glyphs, #ktoast).
+@prefix
+wait 1500
+ui act menu
+wait 1500
+ui act tab8
+wait 800
+ui act sys_opt
+wait 1500
+ui act o_keys
+wait 1000
+ui act km_kb
+wait 400
+ui key Down
+wait 200
+ui key Down
+wait 200
+ui key Down
+wait 200
+ui key Down
+wait 200
+ui key Down
+wait 300
+dump kmdev__kb_attack
+ui act km_pad
+wait 400
+dump kmdev__pad_attack
+ui key Down
+wait 300
+dump kmdev__pad_down
+ui act km_kb
+wait 400
+dump kmdev__kb_back
+ui act km_slot0
+wait 300
+ui key 2
+wait 400
+dump kmdev__swap
+ui act km_reset
+wait 400
+dump kmdev__reset
+ui act km_close
+wait 800
+ui act o_close
+wait 1500
+ui act close
+wait 1500

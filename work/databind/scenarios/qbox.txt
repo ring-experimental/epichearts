@@ -1,0 +1,68 @@
+# save: lv14
+# QBox: two boxes (item 7/0, opened with a 용비늘 each, bought in the menu shop = sh6), confirm notice (dialogs) ->
+# draw (qbox) -> close -> second draw; quest reward / quest detail notices open/close/reopen
+@prefix
+ui dev gold 100000
+ui dev additem 7 0 1 0
+ui dev additem 7 0 1 0
+wait 1500
+ui act menu
+wait 1500
+ui act tab6
+wait 800
+ui act sh6
+wait 300
+ui act sh_buy
+wait 400
+ui act c_yes
+wait 1200
+ui act sh6
+wait 300
+ui act sh_buy
+wait 400
+ui act c_yes
+wait 1200
+ui act tab1
+wait 800
+ui act it30
+wait 400
+dump menu__qbox_item
+ui act inv_open
+wait 1500
+dump dialogs__qconfirm1
+ui act b0
+wait 1500
+dump qbox__spin1
+wait 8000
+dump qbox__done1
+ui act ok
+wait 2000
+dump qbox__closed1
+ui act it30
+wait 400
+ui act inv_open
+wait 1500
+dump dialogs__qconfirm2
+ui act b0
+wait 9500
+dump qbox__done2
+ui act ok
+wait 2000
+ui act close
+wait 1500
+ui dev notice 1
+wait 1500
+dump dialogs__notice1
+ui act b0
+wait 1200
+dump dialogs__notice1_closed
+ui dev notice 2
+wait 1500
+dump dialogs__notice2
+ui act b0
+wait 1200
+ui dev notice 1
+wait 1500
+dump dialogs__notice1_reopen
+ui act b0
+wait 1200

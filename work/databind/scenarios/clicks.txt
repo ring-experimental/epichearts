@@ -1,0 +1,66 @@
+# save: lv14
+# real mouse clicks (ui click x y, window px at 2280x1080; coordinates from golden/options/open1 and menu dumps):
+# HUD menu button, menu tab, system buttons, options arrows / segments / rows, before and after reopening options.
+# Checks the document-level click listener (screens.cpp ActionListener) and that rebuilt rows need no re-binding.
+# Dumps are named optclick__* (no golden counterpart: read the values in the .state / .ui dumps).
+@prefix
+wait 1500
+ui click 2213 102
+wait 1500
+dump optclick__menu_by_click
+ui click 110 716
+wait 800
+ui click 640 519
+wait 1500
+dump optclick__open1
+ui click 1050 276
+wait 400
+dump optclick__c1_bgm_minus
+ui click 1170 276
+wait 400
+dump optclick__c1_bgm_seg3
+ui click 1479 276
+wait 400
+dump optclick__c1_bgm_plus
+ui click 700 265
+wait 400
+dump optclick__c1_bgm_row
+ui click 1050 376
+wait 400
+dump optclick__c1_fx_minus
+ui click 1625 114
+wait 1500
+dump optclick__closed_by_click
+ui click 640 519
+wait 1500
+dump optclick__open2
+ui click 1050 276
+wait 400
+dump optclick__c2_bgm_minus
+ui click 1427 276
+wait 400
+dump optclick__c2_bgm_seg10
+ui click 1479 376
+wait 400
+dump optclick__c2_fx_plus
+ui click 1560 828
+wait 400
+dump optclick__c2_ctrl_vpad
+ui click 1450 828
+wait 400
+dump optclick__c2_ctrl_direct
+ui click 700 315
+wait 400
+dump optclick__c2_bgm_row
+ui act o_close
+wait 1500
+ui act sys_opt
+wait 1500
+dump optclick__open3
+ui click 1050 276
+wait 400
+dump optclick__c3_bgm_minus
+ui act o_close
+wait 1500
+ui act close
+wait 1500

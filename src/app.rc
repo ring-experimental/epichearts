@@ -1,0 +1,2 @@
+// Windows icon of the executable and its window (the original APK's app icon, tools/make_icons.py)
+1 ICON "app.ico"

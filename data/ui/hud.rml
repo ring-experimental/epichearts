@@ -1,0 +1,242 @@
+<rml>
+<head>
+<title>hud</title>
+<link type="text/rcss" href="theme.rcss"/>
+<style>
+body { pointer-events: none; }
+.hit { pointer-events: auto; }
+
+/* ---- player card (top-left) ---- */
+#player {
+    position: absolute; left: 20dp; top: 18dp;
+    width: 330dp; height: 86dp;
+    padding: 10dp 14dp 10dp 92dp;
+    box-sizing: border-box;
+}
+#portrait {
+    position: absolute; left: 10dp; top: 9dp; width: 68dp; height: 68dp;
+    border-radius: 14dp;
+    decorator: linear-gradient(to bottom, #2c3466, #161a33);
+    border: 1dp rgba(255,255,255,40);
+    overflow: hidden;
+}
+#portrait img { position: absolute; left: -6dp; top: -2dp; width: 80dp; height: 80dp; }
+#lvl {
+    /* round level badge: width = height, border-radius 50 %, white translucent (light theme) */
+    position: absolute; left: 2dp; top: 56dp;
+    width: 28dp; height: 28dp; line-height: 28dp; border-radius: 14dp; text-align: center; /* = 50 % (RmlUi resolves radius % to 0) */
+    font-size: 12dp; font-weight: 800; color: #0c0f1d;
+    background-color: rgba(255,255,255,217); border: 1dp rgba(12,15,29,150);
+    box-shadow: rgba(0,0,0,140) 0dp 2dp 6dp 0dp;
+}
+#name { font-size: 13dp; font-weight: 700; color: #c9d1f2; height: 16dp; }
+.statrow { position: relative; height: 18dp; margin-top: 3dp; }
+.statrow .lbl { position: absolute; left: 0; top: 0; width: 28dp; font-size: 11dp; font-weight: 800; line-height: 16dp; }
+.statrow .bar { position: absolute; left: 28dp; right: 64dp; top: 3dp; height: 10dp; }
+.statrow .val { position: absolute; right: 0; top: 0; width: 62dp; text-align: right; font-size: 12dp; font-weight: 700; line-height: 16dp; color: #e6eaff; }
+#buffs { position: absolute; left: 20dp; top: 108dp; }
+#buffs img { width: 26dp; height: 26dp; margin-right: 6dp; border-radius: 6dp; background-color: rgba(10,12,26,180); border: 1dp rgba(255,255,255,40); }
+
+/* ---- top-right cluster ---- */
+#topright { position: absolute; right: 20dp; top: 18dp; width: 420dp; text-align: right; }
+#btns { white-space: nowrap; }
+#loc { display: block; font-size: 15dp; font-weight: 700; color: #f1f4ff; font-effect: shadow(0dp 2dp #000000a0); margin-bottom: 8dp; }
+#loc .icon { color: #ffd166; margin-right: 6dp; font-size: 14dp; }
+.ibtn {
+    display: inline-block; position: relative;
+    width: 46dp; height: 46dp; margin-left: 16dp;
+    border-radius: 14dp; text-align: center; line-height: 46dp;
+    font-family: lucide; font-size: 21dp; color: #eef1fb;
+    background-color: rgba(13,16,32,190);
+    border: 1dp rgba(255,255,255,30);
+    box-shadow: rgba(0,0,0,110) 0dp 6dp 16dp 0dp;
+    transition: background-color transform 0.12s cubic-out;
+    cursor: pointer;
+}
+.ibtn:hover { background-color: rgba(40,46,84,220); transform: translateY(-1dp); }
+.ibtn:active { transform: scale(0.94); }
+.ibtn.off { opacity: 0.35; pointer-events: none; }
+.ibtn .badge {
+    position: absolute; left: -4dp; top: -4dp; width: 14dp; height: 14dp; border-radius: 7dp; /* key badge takes the right corner */
+    background-color: #ff5c7a; border: 2dp #0d1020;
+}
+.ibtn .k { position: absolute; right: -12dp; top: -12dp; transform: scale(0.74); }
+.ibtn .k .glyph { background-color: #ffffff; color: #0c0f1d; font-weight: 800; box-shadow: rgba(0,0,0,160) 0dp 2dp 4dp 0dp; }
+#gold { margin-top: 12dp; }
+#gold .chip { background-color: rgba(13,16,32,200); border: 1dp rgba(255,255,255,30); padding: 6dp 12dp; font-size: 14dp; font-weight: 700; }
+#mmap { display: none; position: relative; margin: 12dp 0 0 auto; width: 132dp; height: 132dp; padding: 6dp; border-radius: 16dp; cursor: pointer; }
+#mmap.on { display: block; }
+#mmap img { width: 120dp; height: 120dp; border-radius: 10dp; }
+#mmap .k { position: absolute; left: 8dp; bottom: 8dp; }
+#mmap:hover { border-color: rgba(255,209,102,160); }
+#gold .icon { color: #ffd166; margin-right: 6dp; }
+
+/* ---- boss bar (top centre) ---- */
+#boss { position: absolute; left: 50%; top: 22dp; width: 520dp; margin-left: -260dp; text-align: center; display: none; }
+#boss.on { display: block; }
+#bossname { font-size: 18dp; font-weight: 800; letter-spacing: 1dp; color: #ffe2e6; font-effect: shadow(0dp 2dp #000000c0); }
+#bossname .lv { font-size: 13dp; color: #ffb3c0; margin-right: 8dp; }
+#boss .bar { height: 14dp; margin-top: 6dp; border: 1dp rgba(255,120,140,90); background-color: rgba(30,8,14,200); }
+
+/* ---- target card ---- */
+#target { position: absolute; right: 20dp; top: 150dp; width: 240dp; padding: 10dp 12dp; display: none; }
+#target.on { display: block; }
+#tname { font-size: 13dp; font-weight: 700; color: #f2f4ff; }
+#tname .lv { color: #9aa3c2; margin-right: 6dp; font-size: 12dp; }
+#target .bar { height: 7dp; margin-top: 6dp; }
+
+/* ---- hotbar (bottom centre) ---- */
+#hotbar { position: absolute; left: 50%; bottom: 26dp; width: 500dp; margin-left: -250dp; height: 78dp; text-align: center; }
+.slot {
+    display: inline-block; position: relative;
+    width: 64dp; height: 64dp; margin: 0 4dp;
+    border-radius: 16dp;
+    background-color: rgba(12,15,30,205);
+    border: 1dp rgba(255,255,255,34);
+    box-shadow: rgba(0,0,0,120) 0dp 8dp 18dp 0dp, rgba(255,255,255,16) 0dp 1dp 0dp 0dp inset;
+    cursor: pointer;
+    transition: transform border-color 0.1s cubic-out;
+}
+.slot:hover { border-color: rgba(255,209,102,160); }
+.slot:active, .slot.press { transform: scale(0.92); }
+.slot img { position: absolute; left: 8dp; top: 8dp; width: 48dp; height: 48dp; }
+.slot .cd { position: absolute; left: 0; top: 0; right: 0; bottom: 0; border-radius: 16dp; }
+.slot .cdt { position: absolute; left: 0; right: 0; top: 20dp; text-align: center; font-size: 16dp; font-weight: 800; color: #ffffff; font-effect: outline(1dp #000000); }
+.slot .cnt { position: absolute; right: 6dp; bottom: 3dp; font-size: 12dp; font-weight: 800; color: #ffffff; font-effect: outline(1dp #000000c0); }
+.slot .key { position: absolute; left: 50%; top: -11dp; margin-left: -11dp; }
+.slot.empty img, .slot.empty .cnt { display: none; }
+.slot.empty { background-color: rgba(12,15,30,130); border: 1dp rgba(255,255,255,18); }
+/* keyboard / mouse: ten slots (1-5 set A, 6-0 set B), no set toggle; gamepad / touch: five slots */
+#s5, #s6, #s7, #s8, #s9, #gap { display: none; }
+body.kbm #s5, body.kbm #s6, body.kbm #s7, body.kbm #s8, body.kbm #s9 { display: inline-block; }
+body.kbm #gap { display: inline-block; width: 30dp; }
+body.kbm #page { display: none; }
+body.kbm #hotbar { width: 816dp; margin-left: -408dp; }
+/* gamepad: the set indicator is the LB / L1 hold hint, lit while held */
+body.pad #page .pi { color: #8892b6; }
+body.pad #page.held { border-color: #ffd166; background-color: rgba(255,209,102,40); }
+body.pad #page.held .pi { color: #ffd166; }
+#page {
+    display: inline-block; position: relative; vertical-align: top;
+    width: 64dp; height: 64dp; margin-left: 8dp;
+    border-radius: 16dp; cursor: pointer; text-align: center;
+    background-color: rgba(12,15,30,190); border: 1dp rgba(255,255,255,30);
+}
+/* quickslot set toggle (the original's slot page A / B) */
+#page .pi { display: block; font-family: lucide; font-size: 20dp; color: #ffd166; margin-top: 10dp; height: 24dp; line-height: 24dp; }
+#page .pl { display: block; font-size: 12dp; font-weight: 800; color: #c9d1f2; margin-top: 4dp; letter-spacing: 1dp; }
+#page .key { position: absolute; left: 50%; top: -11dp; margin-left: -11dp; }
+
+/* ---- xp strip (bottom edge) ---- */
+#xp { position: absolute; left: 0; right: 0; bottom: 0; height: 6dp; }
+#xp .bar { height: 6dp; border-radius: 0; background-color: rgba(0,0,0,150); }
+#xp .bar .fill { border-radius: 0; }
+#xptext { position: absolute; right: 16dp; bottom: 9dp; font-size: 11dp; font-weight: 700; color: #ffe39a; font-effect: shadow(0dp 1dp #000000); }
+
+/* ---- unspent points ---- */
+#points { position: absolute; left: 20dp; bottom: 22dp; }
+#points .chip { margin-right: 6dp; cursor: pointer; }
+/* bag full: the original's '+' (cGameWorld key 0x32 -> bag expansion); here the gold purchase (bagbuy.cpp) */
+#bagfull { display: none; margin-top: 8dp; height: 32dp; line-height: 32dp; padding: 0 8dp 0 12dp; border-radius: 10dp; font-size: 13dp; font-weight: 800; color: #ffd6dc;
+           background-color: rgba(70,18,30,210); border: 1dp rgba(255,125,147,150); cursor: pointer; text-align: right; }
+#bagfull.on { display: inline-block; }
+#bagfull .i { font-family: lucide; font-size: 14dp; color: #ff7d93; margin-right: 6dp; }
+#bagfull .plus { display: inline-block; margin-left: 8dp; width: 20dp; height: 20dp; line-height: 20dp; text-align: center; border-radius: 6dp; font-family: lucide; font-size: 12dp;
+                 color: #1c0b10; background-color: #ffd166; vertical-align: 1dp; }
+/* script fast-forward (the original's cBattleUi::DrawFastButton while world+0x768), first in the button row */
+#b_fast { display: none; }
+#b_fast.on { display: inline-block; }
+#b_fast.active { background-color: #ffb36b; color: #1c0b10; }
+
+/* ---- V-pad (touch, V-Pad mode): the original's geometry in its 320-px-high framebuffer, as vh (1 px = 0.3125vh) so the
+   controls cover the same share of the screen (cBattleUi::RefreshComponentArea @000f84ac uiType 2, HitTestImpl @000f8834) */
+/* attack: centre (W-59, H-58), radius 39; the hit area also takes the whole corner right / below centre-39 */
+#attack { display: none; }
+body.touch.vpad #attack { display: block; position: absolute; right: 0; bottom: 0; width: 30.6vh; height: 30.3vh; }
+#attack .ab {
+    position: absolute; right: 6.25vh; bottom: 5.94vh; width: 24.4vh; height: 24.4vh;
+    border-radius: 12.2vh; text-align: center; line-height: 24.4vh; font-family: lucide; font-size: 9vh;
+    color: #1c0b10; decorator: linear-gradient(to bottom, #ffc98a, #ff8f5c);
+    box-shadow: rgba(255,120,80,110) 0dp 10dp 28dp 0dp; transition: transform 0.08s cubic-out;
+}
+#attack.press .ab { transform: scale(0.92); }
+/* dpad: centre (79, H-77), hit radius 90; the pad is fixed, the knob shows the held direction (input.cpp stick_update) */
+#vpad { display: none; position: absolute; left: 6.69vh; bottom: 6.06vh; width: 36vh; height: 36vh; border-radius: 18vh;
+        background-color: rgba(10,12,26,150); border: 2dp rgba(255,255,255,90); }
+body.touch.vpad #vpad { display: block; }
+#vpad.held { border-color: rgba(255,209,102,120); }
+#vknob { position: absolute; left: 11vh; top: 11vh; width: 14vh; height: 14vh; border-radius: 7vh;
+         decorator: radial-gradient(circle, #f4f6ff, #b9c0dd); box-shadow: rgba(0,0,0,140) 0dp 4dp 10dp 0dp; }
+#vpad .ar { position: absolute; width: 5vh; height: 5vh; line-height: 5vh; text-align: center; font-family: lucide; font-size: 3.6vh; color: rgba(255,255,255,110); }
+#vpad .ar.u { left: 15.5vh; top: 1.2vh; }
+#vpad .ar.d { left: 15.5vh; bottom: 1.2vh; }
+#vpad .ar.l { left: 1.2vh; top: 15.5vh; }
+#vpad .ar.r { right: 1.2vh; top: 15.5vh; }
+/* quickslots in the arc around attack: the original's centres (W-32,H-129) (W-83,H-119) (W-123,H-83) (W-135,H-36)
+   (W-183,H-36) drawn 0.9x closer to the attack centre, and the set toggle (originally (W-33,H-176)) at (W-160,H-85) inside
+   the arc: the modern top-right column (minimap, gold, bag-full) is taller than the original's and reaches that high */
+body.touch.vpad #hotbar { left: auto; right: 0; bottom: 0; width: 0; height: 0; margin-left: 0; }
+body.touch.vpad #hotbar .slot, body.touch.vpad #page { position: absolute; margin: 0; transform: translate(50%, 50%); }
+body.touch.vpad #s0 { right: 10.84vh; bottom: 38.09vh; }
+body.touch.vpad #s1 { right: 25.19vh; bottom: 35.28vh; }
+body.touch.vpad #s2 { right: 36.44vh; bottom: 25.16vh; }
+body.touch.vpad #s3 { right: 39.81vh; bottom: 11.94vh; }
+body.touch.vpad #s4 { right: 53.31vh; bottom: 11.94vh; }
+body.touch.vpad #page { right: 50vh; bottom: 26.56vh; }
+/* the bag-full chip goes left of the minimap, off the arc */
+body.touch.vpad #bagfull { position: absolute; right: 158dp; top: 80dp; margin-top: 0; }
+body.touch.vpad .slot.press, body.touch.vpad #page.press { transform: translate(50%, 50%) scale(0.92); }
+/* the unspent-point chips move right of the pad */
+body.touch.vpad #points { left: 46vh; }
+/* ---- touch control mode toggle (the original's crosshair button, frame 0x32 at (2,0x44)) ---- */
+#modebtn { display: none; position: absolute; left: 20dp; top: 146dp; height: 34dp; line-height: 34dp; padding: 0 12dp; border-radius: 10dp;
+           font-size: 13dp; font-weight: 800; color: #e9edff; background-color: rgba(13,16,32,200); border: 1dp rgba(255,255,255,40); cursor: pointer; }
+#modebtn .sw { font-family: lucide; font-size: 13dp; color: #8892b6; margin-left: 8dp; }
+#modebtn .i { font-family: lucide; font-size: 15dp; color: #ffd166; margin-right: 6dp; }
+body.touch #modebtn { display: block; }
+body.touch #hotbar { left: auto; right: 150dp; margin-left: 0; width: auto; bottom: 26dp; }
+
+#hud { opacity: 1; transition: opacity 0.25s cubic-out; }
+#hud.hidden { opacity: 0; visibility: hidden; }
+#hud.talking #hotbar, #hud.talking #points { opacity: 0; }
+</style>
+</head>
+<body>
+<div id="hud">
+  <div id="player" class="glass">
+    <div id="portrait" class="hit" data-act="menu"><img id="face" src="" data-bleed="1"/></div>
+    <div id="lvl">1</div>
+    <div id="name">-</div>
+    <div class="statrow"><span class="lbl rose">HP</span><div class="bar hp" id="hpbar"><div class="ghost"/><div class="fill"/></div><span class="val" id="hpv">0</span></div>
+    <div class="statrow"><span class="lbl cyan">MP</span><div class="bar mp" id="mpbar"><div class="ghost"/><div class="fill"/></div><span class="val" id="mpv">0</span></div>
+  </div>
+  <div id="buffs"></div>
+
+  <div id="boss"><div id="bossname"></div><div class="bar boss" id="bossbar"><div class="ghost"/><div class="fill"/></div></div>
+
+  <div id="topright">
+    <div id="loc"><span class="icon">&#xe110;</span><span id="locname"></span></div>
+    <div id="btns">
+      <div class="ibtn hit" id="b_fast" data-act="fast">&#xe0bd;<span class="k" id="k_fast"/></div><div class="ibtn hit" id="b_quest" data-act="quest" title="Quest">&#xe1d0;<div class="badge" id="qbadge"/><span class="k" id="k_quest"/></div><div class="ibtn hit" id="b_map" data-act="map">&#xe110;<span class="k" id="k_map"/></div><div class="ibtn hit" id="b_town" data-act="town">&#xe0f5;<span class="k" id="k_town"/></div><div class="ibtn hit" id="b_save" data-act="save">&#xe14d;<span class="k" id="k_save"/></div><div class="ibtn hit" id="b_menu" data-act="menu">&#xe2c8;<span class="k" id="k_menu"/></div>
+    </div>
+    <div id="mmap" class="glass hit" data-act="map"><img id="mmimg" src=""/><span class="k" id="k_mmap"/></div>
+    <div id="gold"><span class="chip"><span class="icon">&#xe097;</span><span id="goldv">0</span></span></div>
+    <div id="bagfull" class="hit" data-act="bagbuy"><span class="i">&#xe2c8;</span>가방 가득 참<span class="plus">&#xe13d;</span></div>
+  </div>
+
+  <div id="target" class="glass"><div id="tname"></div><div class="bar foe" id="tbar"><div class="ghost"/><div class="fill"/></div></div>
+
+  <div id="points"></div>
+
+  <div id="hotbar">
+    <div class="slot hit" id="s0" data-act="slot0" data-press="1"><img/><div class="cd"/><div class="cdt"/><div class="cnt"/><span class="key"/></div><div class="slot hit" id="s1" data-act="slot1" data-press="1"><img/><div class="cd"/><div class="cdt"/><div class="cnt"/><span class="key"/></div><div class="slot hit" id="s2" data-act="slot2" data-press="1"><img/><div class="cd"/><div class="cdt"/><div class="cnt"/><span class="key"/></div><div class="slot hit" id="s3" data-act="slot3" data-press="1"><img/><div class="cd"/><div class="cdt"/><div class="cnt"/><span class="key"/></div><div class="slot hit" id="s4" data-act="slot4" data-press="1"><img/><div class="cd"/><div class="cdt"/><div class="cnt"/><span class="key"/></div><span id="gap"/><div class="slot hit" id="s5" data-act="slot5"><img/><div class="cd"/><div class="cdt"/><div class="cnt"/><span class="key"/></div><div class="slot hit" id="s6" data-act="slot6"><img/><div class="cd"/><div class="cdt"/><div class="cnt"/><span class="key"/></div><div class="slot hit" id="s7" data-act="slot7"><img/><div class="cd"/><div class="cdt"/><div class="cnt"/><span class="key"/></div><div class="slot hit" id="s8" data-act="slot8"><img/><div class="cd"/><div class="cdt"/><div class="cnt"/><span class="key"/></div><div class="slot hit" id="s9" data-act="slot9"><img/><div class="cd"/><div class="cdt"/><div class="cnt"/><span class="key"/></div><div id="page" class="hit" data-act="page" data-press="1"><span class="pi">&#xe52d;</span><span class="pl">SET A</span><span class="key"/></div>
+  </div>
+  <div id="vpad"><span class="ar u">&#xe070;</span><span class="ar d">&#xe06d;</span><span class="ar l">&#xe06e;</span><span class="ar r">&#xe06f;</span><div id="vknob"/></div>
+  <div id="modebtn" class="hit" data-act="ctrlmode"><span class="i">&#xe1d7;</span><span id="modelbl">Direct</span><span class="sw">&#xe24a;</span></div>
+  <div id="attack" class="hit" data-act="attack" data-press="1"><div class="ab">&#xe2b4;</div></div>
+
+  <div id="xp"><div class="bar xp" id="xpbar"><div class="fill"/></div></div>
+  <div id="xptext"></div>
+</div>
+</body>
+</rml>

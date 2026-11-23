@@ -1,0 +1,49 @@
+<rml>
+<head>
+<title>qbox</title>
+<link type="text/rcss" href="theme.rcss"/>
+<style>
+/* QBox draw (qbox.cpp, the look of cFormPopup kind 8): the opened box, three reels, the drawn reward */
+body { display: none; }
+body.on { display: block; }
+#scrim { position: absolute; left: 0; top: 0; right: 0; bottom: 0; background-color: #03040ab0; }
+#wrap { position: absolute; left: 0; top: 0; right: 0; bottom: 0; display: flex; justify-content: center; align-items: center; }
+#box { width: 540dp; padding: 26dp 30dp 24dp 30dp; animation: 0.18s cubic-out 1 popin; }
+@keyframes popin { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+#kicker { font-size: 12dp; font-weight: 800; letter-spacing: 3dp; color: #ffb547; }
+#head { position: relative; height: 64dp; margin-top: 10dp; }
+#bicon { position: absolute; left: 0; top: 0; width: 64dp; height: 64dp; border-radius: 14dp; background-color: rgba(255,255,255,10); }
+#bname { position: absolute; left: 80dp; top: 8dp; font-size: 22dp; font-weight: 800; color: #ffffff; }
+#bcost { position: absolute; left: 80dp; top: 38dp; font-size: 14dp; font-weight: 700; color: #ffd166; }
+#reels { margin-top: 24dp; text-align: center; white-space: nowrap; }
+.reel { display: inline-block; position: relative; width: 120dp; height: 120dp; margin: 0 9dp; border-radius: 20dp;
+        background-color: rgba(255,255,255,8); border: 2dp rgba(255,255,255,26); overflow: hidden;
+        transition: transform opacity border-color 0.2s cubic-out; }
+.reel img { position: absolute; left: 24dp; top: 24dp; width: 72dp; height: 72dp; }
+.reel.spin { border-color: rgba(255,209,102,90); }
+.reel.spin img { opacity: 0.75; transform: translateY(-3dp); }
+.reel.stop { animation: 0.22s back-out 1 land; }
+@keyframes land { from { transform: scale(0.9); } to { transform: scale(1); } }
+.reel.win { border-color: #ffd166; transform: scale(1.08); decorator: radial-gradient(circle, #ffd16655, #ffd16600 70%); }
+.reel.lose { opacity: 0.38; }
+#rtitle { margin-top: 24dp; text-align: center; font-size: 21dp; font-weight: 800; color: #ffffff; min-height: 30dp; }
+#rtitle .got { display: inline-block; margin-right: 10dp; padding: 2dp 10dp; border-radius: 8dp; font-size: 13dp; font-weight: 800; letter-spacing: 1dp;
+               color: #1c0b10; decorator: linear-gradient(to bottom, #ffd59a, #ffad66); vertical-align: 3dp; }
+#rsub { margin-top: 4dp; text-align: center; font-size: 16dp; font-weight: 700; color: #ffd166; min-height: 22dp; }
+#btns { margin-top: 20dp; text-align: center; }
+#ok { min-width: 180dp; }
+body:not(.done) #ok { opacity: 0.35; pointer-events: none; }
+</style>
+</head>
+<body data-block="1" data-model="qbox" data-class-done="done">
+<div id="scrim"/>
+<div id="wrap"><div id="box" class="glass-strong blur">
+  <div id="kicker">QBOX</div>
+  <div id="head"><img id="bicon" data-attr-src="bicon"/><div id="bname" data-rml="bname"></div><div id="bcost">{{bcost}}</div></div>
+  <div id="reels"><div class="reel" id="r0" data-class-spin="reels[0].spin" data-class-stop="reels[0].stop" data-class-win="reels[0].win" data-class-lose="reels[0].lose"><img id="r0img" data-attr-src="reels[0].src"/></div><div class="reel" id="r1" data-class-spin="reels[1].spin" data-class-stop="reels[1].stop" data-class-win="reels[1].win" data-class-lose="reels[1].lose"><img id="r1img" data-attr-src="reels[1].src"/></div><div class="reel" id="r2" data-class-spin="reels[2].spin" data-class-stop="reels[2].stop" data-class-win="reels[2].win" data-class-lose="reels[2].lose"><img id="r2img" data-attr-src="reels[2].src"/></div></div>
+  <div id="rtitle" data-rml="rtitle"></div>
+  <div id="rsub">{{rsub}}</div>
+  <div id="btns"><span class="btn primary" id="ok" data-act="ok">확인</span></div>
+</div></div>
+</body>
+</rml>

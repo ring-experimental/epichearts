@@ -1,0 +1,86 @@
+<rml>
+<head>
+<title>skillbook</title>
+<link type="text/rcss" href="theme.rcss"/>
+<style>
+/* special books (skillbook.cpp, replaces cFormSkillBook 0xE and its page popup, cFormPopup kind 6) */
+body { display: none; }
+body.on { display: block; animation: 0.18s cubic-out 1 fadein; }
+@keyframes fadein { from { opacity: 0; } to { opacity: 1; } }
+#scrim { position: absolute; left: 0; top: 0; right: 0; bottom: 0; background-color: #05060cd0; }
+#main { position: absolute; left: 40dp; right: 40dp; top: 32dp; bottom: 32dp; padding: 26dp 30dp; box-sizing: border-box; }
+#kicker { font-size: 12dp; font-weight: 800; letter-spacing: 3dp; color: #ffb547; }
+#title { font-size: 28dp; font-weight: 800; color: #ffffff; margin-top: 4dp; }
+#tr { position: absolute; right: 30dp; top: 30dp; }
+#tr .btn { padding: 8dp 14dp; font-size: 14dp; }
+#tr .icon { margin-right: 6dp; }
+#grid { position: absolute; left: 30dp; top: 100dp; bottom: 50dp; width: 560dp; overflow-y: auto; }
+.bk { display: inline-block; position: relative; width: 70dp; height: 70dp; margin: 0 8dp 8dp 0; border-radius: 14dp; cursor: pointer;
+      background-color: rgba(255,255,255,8); border: 1dp rgba(255,255,255,18); }
+.bk img { position: absolute; left: 11dp; top: 11dp; width: 48dp; height: 48dp; }
+.bk.no img { opacity: 0.3; }
+.bk:hover { background-color: rgba(255,255,255,14); }
+.bk.focus { border-color: rgba(255,209,102,170); background-color: rgba(255,255,255,16); }
+.bk.sel { border-color: #ffd166; background-color: rgba(255,209,102,24); }
+.bk .tag { position: absolute; right: 4dp; bottom: 3dp; font-family: lucide; font-size: 14dp; }
+.bk .tag.done { color: #7ee2a8; }
+.bk .tag.cur { color: #ffd166; }
+#det { position: absolute; left: 610dp; right: 30dp; top: 100dp; bottom: 50dp; border-radius: 18dp; background-color: rgba(255,255,255,7); border: 1dp rgba(255,255,255,18); }
+.bigic { position: absolute; left: 22dp; top: 22dp; width: 84dp; height: 84dp; border-radius: 18dp; background-color: rgba(255,255,255,10); }
+.bigic img { position: absolute; left: 10dp; top: 10dp; width: 64dp; height: 64dp; }
+.dn { position: absolute; left: 124dp; top: 26dp; right: 20dp; font-size: 22dp; font-weight: 800; color: #ffffff; }
+.st { position: absolute; left: 124dp; top: 60dp; font-size: 13dp; font-weight: 700; }
+.st.s-no { color: #ff7d93; } .st.s-read { color: #ffd166; } .st.s-done { color: #7ee2a8; }
+.pc { position: absolute; left: 124dp; top: 82dp; font-size: 12dp; color: #8892b6; font-weight: 700; }
+.ds { position: absolute; left: 22dp; right: 22dp; top: 128dp; bottom: 80dp; font-size: 15dp; line-height: 25dp; color: #c9d1ee; overflow-y: auto; }
+.acts { position: absolute; left: 22dp; right: 22dp; bottom: 20dp; }
+.acts .btn { width: 100%; box-sizing: border-box; }
+.none { position: absolute; left: 0; right: 0; top: 45%; text-align: center; font-size: 15dp; color: #6b7394; }
+#hint { position: absolute; left: 30dp; bottom: 16dp; font-size: 13dp; color: #8892b6; }
+#hint span { margin-right: 16dp; }
+/* page popup */
+#pscrim { position: absolute; left: 0; top: 0; right: 0; bottom: 0; background-color: #03040a99; display: none; }
+#pwrap { position: absolute; left: 0; top: 0; right: 0; bottom: 0; display: none; justify-content: center; align-items: center; }
+body.page #pscrim { display: block; }
+body.page #pwrap { display: flex; }
+#pbox { width: 600dp; padding: 26dp 30dp 22dp 30dp; animation: 0.16s cubic-out 1 popin; }
+@keyframes popin { from { opacity: 0; transform: scale(0.96); } to { opacity: 1; transform: scale(1); } }
+#pkick { font-size: 12dp; font-weight: 800; letter-spacing: 3dp; color: #ffb547; }
+#ptitle { font-size: 21dp; font-weight: 800; color: #ffffff; margin-top: 4dp; }
+#ptitle .pn { margin-left: 12dp; font-size: 14dp; color: #8892b6; font-weight: 700; }
+#ptext { margin-top: 14dp; max-height: 220dp; overflow-y: auto; font-size: 16dp; line-height: 27dp; color: #dbe1ff; }
+#porb { margin-top: 16dp; padding: 14dp 16dp; border-radius: 14dp; background-color: rgba(255,255,255,7); }
+#porb .orb img { width: 30dp; height: 30dp; vertical-align: -9dp; margin-right: 8dp; }
+#porb .orb .on { font-size: 15dp; font-weight: 700; color: #f1f4ff; }
+#porb .orb .prog { float: right; font-size: 15dp; font-weight: 700; color: #aab3d6; }
+#porb .orb .prog .v { color: #ffd166; font-size: 18dp; font-weight: 800; }
+#porb .bar { margin-top: 10dp; height: 6dp; border-radius: 3dp; background-color: rgba(255,255,255,20); }
+#porb .bar .fill { height: 6dp; border-radius: 3dp; decorator: linear-gradient(to right, #ffd166, #ff9f5a); }
+#porb .have { margin-top: 8dp; font-size: 12dp; color: #8892b6; font-weight: 700; }
+#porb .mastered { font-size: 15dp; font-weight: 800; color: #7ee2a8; }
+#porb .mastered .ic { font-family: lucide; }
+#pacts { margin-top: 18dp; text-align: right; }
+#pacts .btn { margin-left: 8dp; }
+#pacts .nav { font-family: lucide; min-width: 44dp; padding-left: 0; padding-right: 0; text-align: center; }
+#pacts .off { opacity: 0.35; }
+</style>
+</head>
+<body data-block="1" data-model="skillbook" data-class-page="page">
+<div id="scrim"/>
+<div id="main" class="glass-strong blur">
+  <div id="kicker">INN</div><div id="title">스페셜북</div>
+  <div id="tr"><span class="btn" data-act="close" data-nonav="1"><span class="icon">&#xe1b2;</span>나가기</span></div>
+  <div id="grid"><div class="bk" data-for="b : grid" data-class-sel="b.sel" data-class-no="b.no" data-attr-data-act="b.act"><img data-attr-src="b.src"/><span class="tag done" data-if="b.done">&#xe06c;</span><span class="tag cur" data-if="b.cur">&#xe05f;</span></div></div>
+  <div id="det"><div class="bigic" data-if="has"><img data-attr-src="icon"/></div><div class="dn" data-if="has" data-rml="dn"></div><div class="st" data-if="has" data-class-s-no="st_k == 0" data-class-s-done="st_k == 1" data-class-s-read="st_k == 2" data-rml="st"></div><div class="pc" data-if="has">{{pc}}</div><div class="ds" data-if="has" data-rml="ds"></div><div class="acts" data-if="has && owned"><span class="btn primary" data-act="open">스페셜북 읽기</span></div><div class="none" data-if="!has">스페셜북을 선택하세요</div></div>
+  <div id="hint" data-rml="hint"></div>
+</div>
+<div id="pscrim"/>
+<div id="pwrap"><div id="pbox" class="glass-strong blur">
+  <div id="pkick">PAGE</div>
+  <div id="ptitle" data-rml="ptitle"></div>
+  <div id="ptext" data-rml="ptext"></div>
+  <div id="porb" data-rml="porb"></div>
+  <div id="pacts"><span class="btn nav" id="pprev" data-act="pprev">&#xe06e;</span><span class="btn nav" id="pnext" data-act="pnext">&#xe06f;</span><span class="btn" id="pclose" data-act="pclose">닫기</span><span class="btn primary" id="pinv" data-act="pinv">오브 투자</span></div>
+</div></div>
+</body>
+</rml>

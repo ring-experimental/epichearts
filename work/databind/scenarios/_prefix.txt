@@ -1,0 +1,11 @@
+# common start (run_golden.py inserts it where a scenario says "@prefix"):
+# lv14 save slot 2 load, mission popup dismissed, then the keyboard/mouse device (the focus class is shown)
+wait 13000
+tap 256 168
+wait 2500
+tap 256 184
+wait 9000
+tap 256 160
+wait 4000
+ui dev kbm
+wait 300

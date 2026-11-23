@@ -1,0 +1,18 @@
+# 새로하기 from the save list when other saves exist: what comes before/after the character select
+wait 10000
+snap title
+wait 3000
+tap 256 168      # Game Start
+wait 2500
+snap saves
+tap 256 248      # 새로하기
+wait 4000
+snap ng_first
+tap 59 268       # character 1
+wait 2000
+snap ng_char
+tap 418 252      # Start
+wait 6000
+snap ng_after1
+wait 6000
+snap ng_after2

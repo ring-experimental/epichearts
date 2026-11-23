@@ -1,0 +1,86 @@
+# save: lv14
+# options (from the menu), keymap, help; keyboard nav, one touch-device pass of the options
+@prefix
+wait 1500
+ui act menu
+wait 1500
+ui act tab8
+wait 800
+ui act sys_opt
+wait 1500
+dump options__open1
+ui key Down
+wait 300
+ui key Down
+wait 300
+dump options__nav1
+ui key Right
+wait 400
+dump options__nav1_right
+ui key Left
+wait 400
+ui act o_bgm-
+wait 400
+dump options__bgm_minus
+ui act o_keys
+wait 1000
+dump keymap__open1
+ui key Down
+wait 300
+dump keymap__nav1
+ui act km_kb
+wait 300
+ui act km_attack
+wait 400
+dump keymap__wait
+ui act km_close
+wait 300
+ui act km_close
+wait 800
+dump keymap__closed
+ui act o_keys
+wait 1000
+dump keymap__open2
+ui act km_close
+wait 800
+ui act o_close
+wait 1500
+dump options__closed
+ui act sys_opt
+wait 1500
+dump options__open2
+ui act o_bgm+
+wait 400
+ui act o_close
+wait 1500
+ui dev touch
+wait 300
+ui act sys_opt
+wait 1500
+dump options__touch1
+ui act o_close
+wait 1500
+ui dev kbm
+wait 300
+ui act sys_help
+wait 1500
+dump help__open1
+ui act t2
+wait 600
+dump help__t2
+ui act rescue
+wait 400
+dump help__rescue_confirm
+ui act c_no
+wait 400
+dump help__rescue_no
+ui act hclose
+wait 1500
+dump help__closed
+ui act sys_help
+wait 1500
+dump help__open2
+ui act hclose
+wait 1500
+ui act close
+wait 1500

@@ -1,0 +1,86 @@
+# save: lv14
+# help: every topic page (9) and back to the list (.sel stays on t<n>; no focus there, as before), the rescue button on the pages that offer it,
+# page scrolling with Down, Escape back to the list. Dumps helpx__*; baseline golden_helpx/ recorded with the
+# pre-migration help.cpp / help.rml (commit 7bb5803).
+@prefix
+wait 1500
+ui act menu
+wait 1500
+ui act tab8
+wait 800
+ui act sys_help
+wait 1500
+dump helpx__list0
+ui act t0
+wait 400
+dump helpx__t0
+ui act hback
+wait 400
+dump helpx__back0
+ui act t1
+wait 400
+dump helpx__t1
+ui act hback
+wait 400
+dump helpx__back1
+ui act t2
+wait 400
+dump helpx__t2
+ui act hback
+wait 400
+dump helpx__back2
+ui act t3
+wait 400
+dump helpx__t3
+ui act hback
+wait 400
+dump helpx__back3
+ui act t4
+wait 400
+dump helpx__t4
+ui act hback
+wait 400
+dump helpx__back4
+ui act t5
+wait 400
+dump helpx__t5
+ui act hback
+wait 400
+dump helpx__back5
+ui act t6
+wait 400
+dump helpx__t6
+ui act hback
+wait 400
+dump helpx__back6
+ui act t7
+wait 400
+dump helpx__t7
+ui act hback
+wait 400
+dump helpx__back7
+ui act t8
+wait 400
+dump helpx__t8
+ui act hback
+wait 400
+dump helpx__back8
+ui act t0
+wait 400
+ui key Down
+wait 200
+ui key Down
+wait 200
+ui key Down
+wait 400
+dump helpx__t0_scroll
+ui key Escape
+wait 400
+dump helpx__esc_list
+ui key Right
+wait 300
+dump helpx__list_right
+ui act hclose
+wait 1500
+ui act close
+wait 1500

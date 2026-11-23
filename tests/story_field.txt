@@ -1,0 +1,18 @@
+# load a story-point save made by tools/mksave.py (slot 2) and compare the field, the mission popup and the bag
+wait 10000
+snap title
+wait 3000        # the original's title takes input only after its intro animation
+tap 256 168      # Game Start
+wait 2500
+snap saves
+tap 256 184      # second save slot
+wait 9000
+snap field_popup
+tap 256 160      # dismiss mission popup
+wait 2500
+snap field
+tap 19 20        # bag -> character page
+wait 2000
+snap character
+tap 442 266      # close
+wait 1500

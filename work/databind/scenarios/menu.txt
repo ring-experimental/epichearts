@@ -1,0 +1,153 @@
+# save: lv14
+# menu pages (tabs 0-8), quickslot picker, shop confirm, detail popup, hotslot popup; open/close/reopen;
+# a touch-device pass of the bag page; bag expansion from the HUD (bagbuy)
+@prefix
+ui dev gold 100000
+wait 1500
+ui act menu
+wait 1500
+dump menu__open1
+ui key Down
+wait 300
+ui key Down
+wait 300
+ui key Right
+wait 300
+dump menu__nav1
+ui act tab0
+wait 800
+dump menu__tab0
+ui act tab1
+wait 800
+dump menu__tab1
+ui act it3
+wait 400
+dump menu__tab1_it3
+ui key Right
+wait 300
+dump menu__tab1_right
+ui act tab2
+wait 800
+dump menu__tab2
+ui act eqs1
+wait 400
+dump menu__tab2_eqs1
+ui act tab3
+wait 800
+dump menu__tab3
+ui act sk1
+wait 400
+dump menu__tab3_sk1
+ui act skt1
+wait 400
+dump menu__tab3_skt1
+ui act tab4
+wait 800
+dump menu__tab4
+ui act q1
+wait 400
+dump menu__tab4_q1
+ui act tab6
+wait 800
+dump menu__tab6
+ui act sh1
+wait 300
+ui act sh_buy
+wait 400
+dump menu__tab6_confirm
+ui act c_no
+wait 400
+dump menu__tab6_no
+ui act tab8
+wait 800
+dump menu__tab8
+ui act tab1
+wait 800
+ui act it0
+wait 400
+ui act inv_hot
+wait 400
+dump menu__picker
+ui act pk_close
+wait 400
+dump menu__picker_closed
+ui act inv_hot
+wait 400
+ui act close
+wait 1500
+dump menu__closed1
+ui act menu
+wait 1500
+dump menu__open2
+ui act tab1
+wait 800
+dump menu__tab1_reopen
+ui act tab4
+wait 800
+dump menu__tab4_reopen
+ui act tab1
+wait 800
+ui dev detail 0
+wait 1500
+dump detail__open1
+ui act ok
+wait 1200
+ui dev detail 1
+wait 1500
+dump detail__open2
+ui act ok
+wait 1200
+ui dev detail 0
+wait 1500
+dump detail__reopen
+ui act ok
+wait 1200
+ui act it0
+wait 400
+ui dev invact 42
+wait 1500
+dump hotslot__open1
+ui key Right
+wait 300
+dump hotslot__nav1
+ui act s3
+wait 1000
+dump hotslot__s3
+ui act it0
+wait 400
+ui dev invact 42
+wait 1500
+dump hotslot__open2
+ui act close
+wait 1500
+dump menu__after_hotslot
+ui act close
+wait 1500
+ui dev touch
+wait 300
+ui act menu
+wait 1500
+ui act tab1
+wait 800
+ui act it3
+wait 400
+dump menu__touch_tab1
+ui act close
+wait 1500
+ui dev kbm
+wait 300
+dump menu__closed2
+ui act bagbuy
+wait 1000
+dump bagbuy__open1
+ui act bb_close
+wait 800
+dump bagbuy__closed
+ui act bagbuy
+wait 1000
+dump bagbuy__open2
+ui act bb_buy
+wait 1500
+dump bagbuy__bought
+ui act bb_close
+wait 800

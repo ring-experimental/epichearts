@@ -1,0 +1,66 @@
+<rml>
+<head>
+<title>collection</title>
+<link type="text/rcss" href="theme.rcss"/>
+<style>
+/* collection book (collection.cpp, replaces cFormCollection 0xFF) */
+body { display: none; }
+body.on { display: block; animation: 0.18s cubic-out 1 fadein; }
+@keyframes fadein { from { opacity: 0; } to { opacity: 1; } }
+#scrim { position: absolute; left: 0; top: 0; right: 0; bottom: 0; background-color: #05060cd0; }
+#main { position: absolute; left: 40dp; right: 40dp; top: 32dp; bottom: 32dp; padding: 26dp 30dp; box-sizing: border-box; }
+#kicker { font-size: 12dp; font-weight: 800; letter-spacing: 3dp; color: #ffb547; }
+#title { font-size: 28dp; font-weight: 800; color: #ffffff; margin-top: 4dp; }
+#tr { position: absolute; right: 30dp; top: 30dp; }
+#tr .btn { padding: 8dp 14dp; font-size: 14dp; }
+#tr .icon { margin-right: 6dp; }
+#grid { position: absolute; left: 30dp; top: 100dp; bottom: 50dp; width: 560dp; overflow-y: auto; }
+.bk { display: inline-block; position: relative; width: 70dp; height: 70dp; margin: 0 8dp 8dp 0; border-radius: 14dp; cursor: pointer;
+      background-color: rgba(255,255,255,8); border: 1dp rgba(255,255,255,18); }
+.bk img { position: absolute; left: 11dp; top: 11dp; width: 48dp; height: 48dp; }
+.bk.no img { opacity: 0.3; }
+.bk:hover { background-color: rgba(255,255,255,14); }
+.bk.focus { border-color: rgba(255,209,102,170); background-color: rgba(255,255,255,16); }
+.bk.sel { border-color: #ffd166; background-color: rgba(255,209,102,24); }
+.bk .tag { position: absolute; right: 4dp; bottom: 3dp; font-family: lucide; font-size: 14dp; }
+.bk .tag.done { color: #7ee2a8; }
+.bk .tag.cur { color: #ffd166; }
+#det { position: absolute; left: 610dp; right: 30dp; top: 100dp; bottom: 50dp; border-radius: 18dp; background-color: rgba(255,255,255,7); border: 1dp rgba(255,255,255,18); }
+.bigic { position: absolute; left: 22dp; top: 22dp; width: 84dp; height: 84dp; border-radius: 18dp; background-color: rgba(255,255,255,10); }
+.bigic img { position: absolute; left: 10dp; top: 10dp; width: 64dp; height: 64dp; }
+.dn { position: absolute; left: 124dp; top: 26dp; right: 20dp; font-size: 22dp; font-weight: 800; color: #ffffff; }
+.st { position: absolute; left: 124dp; top: 60dp; font-size: 13dp; font-weight: 700; }
+.st.s-no { color: #ff7d93; } .st.s-read { color: #ffd166; } .st.s-done { color: #7ee2a8; }
+.pc { position: absolute; left: 124dp; top: 82dp; font-size: 12dp; color: #8892b6; font-weight: 700; }
+.ds { position: absolute; left: 22dp; right: 22dp; top: 128dp; bottom: 80dp; font-size: 15dp; line-height: 25dp; color: #c9d1ee; overflow-y: auto; }
+.acts { position: absolute; left: 22dp; right: 22dp; bottom: 20dp; }
+.acts .btn { width: 100%; box-sizing: border-box; }
+.none { position: absolute; left: 0; right: 0; top: 45%; text-align: center; font-size: 15dp; color: #6b7394; }
+#hint { position: absolute; left: 30dp; bottom: 16dp; font-size: 13dp; color: #8892b6; }
+#hint span { margin-right: 16dp; }
+#prog { position: absolute; left: 30dp; top: 74dp; font-size: 13dp; font-weight: 800; color: #ffd166; }
+#pbar { position: absolute; left: 110dp; top: 80dp; width: 200dp; height: 6dp; border-radius: 3dp; background-color: rgba(255,255,255,20); }
+#pfill { height: 6dp; border-radius: 3dp; decorator: linear-gradient(to right, #ffd166, #ff9f5a); }
+.cl { display: inline-block; position: relative; width: 70dp; height: 70dp; margin: 0 8dp 8dp 0; border-radius: 14dp; cursor: pointer;
+      background-color: rgba(255,255,255,8); border: 1dp rgba(255,255,255,18); }
+.cl img { position: absolute; left: 11dp; top: 11dp; width: 48dp; height: 48dp; opacity: 0.25; }
+.cl.own img, .cl.reg img { opacity: 1; }
+.cl:hover { background-color: rgba(255,255,255,14); }
+.cl.focus { border-color: rgba(255,209,102,170); background-color: rgba(255,255,255,16); }
+.cl.sel { border-color: #ffd166; background-color: rgba(255,209,102,24); }
+.cl .tag { position: absolute; right: 4dp; bottom: 3dp; font-family: lucide; font-size: 14dp; color: #7ee2a8; }
+.cl .tag.new { color: #ffd166; }
+.st.s-reg { color: #7ee2a8; } .st.s-own { color: #ffd166; }
+</style>
+</head>
+<body data-block="1" data-model="collection">
+<div id="scrim"/>
+<div id="main" class="glass-strong blur">
+  <div id="kicker">COLLECTION</div><div id="title" data-rml="title"></div><div id="prog">{{prog}}</div><div id="pbar"><div id="pfill" data-style-width="pfill"></div></div>
+  <div id="tr"><span class="btn" data-act="close" data-nonav="1"><span class="icon">&#xe1b2;</span>나가기</span></div>
+  <div id="grid"><div class="cl" data-for="e : grid" data-class-sel="e.sel" data-class-reg="e.reg" data-class-own="e.own" data-attr-data-act="e.act"><img data-attr-src="e.src"/><span class="tag" data-if="e.reg">&#xe06c;</span><span class="tag new" data-if="e.own">&#xe13d;</span></div></div>
+  <div id="det"><div class="bigic" data-if="has"><img data-attr-src="icon"/></div><div class="dn" data-if="has" data-rml="dn"></div><div class="st" data-if="has" data-class-s-reg="st_k == 2" data-class-s-own="st_k == 1" data-class-s-no="st_k == 0">{{st}}</div><div class="ds" data-if="has" data-rml="ds"></div><div class="acts" data-if="has"><span class="btn" data-if="reg || unreg" data-class-primary="reg" data-attr-data-act="reg ? 'reg' : 'unreg'" data-rml="reg ? l_reg : l_unreg"></span></div></div>
+  <div id="hint" data-rml="hint"></div>
+</div>
+</body>
+</rml>

@@ -1,0 +1,50 @@
+<rml>
+<head>
+<title>keymap</title>
+<link type="text/rcss" href="theme.rcss"/>
+<style>
+body { display: none; }
+body.on { display: block; animation: 0.16s cubic-out 1 popin; }
+@keyframes popin { from { opacity: 0; } to { opacity: 1; } }
+#scrim { position: absolute; left: 0; top: 0; right: 0; bottom: 0; background-color: #03040ad8; }
+#wrap { position: absolute; left: 0; top: 0; right: 0; bottom: 0; display: flex; justify-content: center; align-items: center; }
+#box { position: relative; width: 640dp; height: 560dp; padding: 26dp 30dp 22dp 30dp; box-sizing: border-box; border-radius: 18dp;
+       background-color: #0d1022; border: 1dp rgba(255,255,255,30); box-shadow: rgba(0,0,0,150) 0dp 6dp 20dp 0dp; }
+#head h1 { font-size: 24dp; font-weight: 800; color: #ffffff; }
+#head h1 .icon { color: #ffd166; margin-right: 10dp; font-size: 20dp; }
+#tabs { margin-top: 14dp; height: 38dp; }
+#tabs .c { display: inline-block; padding: 7dp 16dp; margin-right: 8dp; border-radius: 10dp; font-size: 14dp; font-weight: 700; color: #aab3d6;
+           background-color: rgba(255,255,255,8); cursor: pointer; }
+#tabs .c .i { font-family: lucide; margin-right: 8dp; }
+#tabs .c.on { color: #1c0b10; decorator: linear-gradient(to bottom, #ffd59a, #ffad66); }
+#rows { position: absolute; left: 30dp; right: 30dp; top: 130dp; bottom: 104dp; overflow-y: auto; }
+#kfade { position: absolute; left: 30dp; right: 40dp; bottom: 104dp; height: 40dp; pointer-events: none; decorator: linear-gradient(to bottom, #0d102200, #0d1022f5); }
+.row { position: relative; height: 46dp; line-height: 46dp; padding: 0 14dp; margin-bottom: 4dp; border-radius: 10dp; cursor: pointer;
+       background-color: rgba(255,255,255,6); border: 1dp rgba(255,255,255,0); }
+.row:hover { background-color: rgba(255,255,255,12); }
+.row.focus { border-color: rgba(255,209,102,170); background-color: rgba(255,209,102,16); }
+.row.wait { border-color: #ffd166; background-color: rgba(255,209,102,30); }
+.sec { font-size: 12dp; font-weight: 800; letter-spacing: 1.5dp; color: #ffb547; margin: 10dp 0 6dp 4dp; }
+.row .l { font-size: 15dp; font-weight: 600; color: #dfe5ff; }
+.row .v { position: absolute; right: 14dp; top: 0; }
+.row .v .glyph { vertical-align: middle; }
+.row .wait { font-size: 13dp; font-weight: 700; color: #ffd166; }
+#note { position: absolute; left: 30dp; bottom: 66dp; font-size: 12dp; color: #6b7394; }
+#btns { position: absolute; right: 30dp; bottom: 20dp; }
+#btns .btn { margin-left: 8dp; }
+#ktoast { position: absolute; left: 30dp; right: 30dp; top: 84dp; text-align: right; font-size: 13dp; font-weight: 700; color: #ffd166; }
+</style>
+</head>
+<body data-block="1" data-model="keymap">
+<div id="scrim"/>
+<div id="wrap"><div id="box">
+  <div id="head"><h1><span class="icon">&#xe0df;</span>키 설정</h1></div>
+  <div id="tabs"><span class="c" data-class-on="!pad" data-act="km_kb" data-nonav="1"><span class="i">&#xe284;</span>키보드</span><span class="c" data-if="has_pad" data-class-on="pad" data-act="km_pad" data-nonav="1"><span class="i">&#xe0df;</span>{{pad_name}} 컨트롤러</span></div>
+  <div id="ktoast" data-rml="toast"></div>
+  <div id="rows"><div class="sec">필드</div><div class="row" data-for="r : g0" data-class-wait="r.wait" data-attr-data-act="r.act"><span class="l">{{r.label}}</span><span class="v" data-rml="r.v"></span></div><div class="sec">메뉴 · 창 · 대화</div><div class="row" data-for="r : g1" data-class-wait="r.wait" data-attr-data-act="r.act"><span class="l">{{r.label}}</span><span class="v" data-rml="r.v"></span></div></div>
+  <div id="kfade"></div>
+  <div id="note">{{note}}</div>
+  <div id="btns"><span class="btn" data-act="km_reset" data-nonav="1">기본값으로</span><span class="btn primary" data-act="km_close" data-nonav="1">닫기</span></div>
+</div></div>
+</body>
+</rml>

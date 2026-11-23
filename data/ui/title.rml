@@ -1,0 +1,141 @@
+<rml>
+<head>
+<title>title</title>
+<link type="text/rcss" href="theme.rcss"/>
+<style>
+body { display: none; background-color: #05060c; }
+body.on { display: block; }
+#art { position: absolute; left: 0; top: 0; animation: 28s sine-in-out infinite alternate drift; }
+@keyframes drift { from { transform: scale(1.0) translate(0dp, 0dp); } to { transform: scale(1.06) translate(-14dp, -8dp); } }
+#shade-l { position: absolute; left: 0; top: 0; bottom: 0; width: 62%; decorator: linear-gradient(to right, #05060cf2, #05060cc0 45%, #05060c00); }
+#shade-b { position: absolute; left: 0; right: 0; bottom: 0; height: 40%; decorator: linear-gradient(to bottom, #05060c00, #05060ce0); }
+#shade-t { position: absolute; left: 0; right: 0; top: 0; height: 22%; decorator: linear-gradient(to bottom, #05060ca0, #05060c00); }
+
+#brand { position: absolute; left: 92dp; top: 96dp; }
+#brand .kicker { font-size: 13dp; font-weight: 800; letter-spacing: 6dp; color: #ffb547; }
+#brand .logo { font-size: 72dp; font-weight: 900; letter-spacing: 2dp; color: #fff6ea; line-height: 74dp; margin-top: 6dp;
+               font-effect: glow(0dp 6dp 0dp 0dp #ff5c7a40); }
+#brand .logo .h { color: #ff6f8a; }
+#brand .sub { font-size: 16dp; font-weight: 600; color: #b9c0dd; letter-spacing: 8dp; margin-top: 6dp; }
+
+#menu { position: absolute; left: 86dp; bottom: 110dp; width: 420dp; } /* anchored to the footer: phones have ~600dp of height */
+.item {
+    position: relative; display: block; padding: 14dp 20dp 14dp 22dp; margin-bottom: 6dp;
+    border-radius: 14dp; cursor: pointer;
+    font-size: 26dp; font-weight: 800; color: #e9edff;
+    transition: background-color padding-left 0.15s cubic-out;
+}
+.item .icon { font-size: 22dp; color: #ffd166; margin-right: 16dp; }
+.item .desc { display: block; font-size: 14dp; font-weight: 600; color: #8f98bb; margin-top: 2dp; margin-left: 40dp; }
+.item:hover, .item.focus { background-color: rgba(255,255,255,20); padding-left: 30dp; }
+.item.focus { box-shadow: rgba(255,209,102,90) 0dp 0dp 0dp 1dp inset; }
+.item.focus::before { }
+
+/* save slots panel */
+#slots {
+    position: absolute; right: 70dp; top: 50%; margin-top: -250dp; width: 520dp;
+    padding: 26dp 26dp 18dp 26dp; display: none;
+    opacity: 0; transform: translateX(30dp); transition: opacity transform 0.22s cubic-out;
+}
+#slots.on { display: block; opacity: 1; transform: translateX(0dp); }
+#slots h1 { font-size: 22dp; font-weight: 800; color: #ffffff; }
+#slots h1 .icon { color: #ffd166; margin-right: 10dp; }
+#slots .hint { font-size: 13dp; color: #8f98bb; margin-top: 4dp; margin-bottom: 16dp; }
+.card {
+    position: relative; height: 104dp; margin-bottom: 12dp; border-radius: 16dp; cursor: pointer;
+    background-color: rgba(255,255,255,10); border: 1dp rgba(255,255,255,26);
+    transition: background-color border-color transform 0.14s cubic-out;
+}
+.card:hover, .card.focus { background-color: rgba(255,255,255,22); border-color: rgba(255,209,102,170); transform: translateX(-4dp); }
+.card .pf { position: absolute; left: 14dp; top: 12dp; width: 80dp; height: 80dp; border-radius: 14dp; overflow: hidden;
+            decorator: linear-gradient(to bottom, #36407a, #1a1e3c); }
+.card .pf img { position: absolute; left: -8dp; top: -2dp; width: 96dp; height: 96dp; }
+.card .no { position: absolute; left: 112dp; top: 16dp; font-size: 12dp; font-weight: 800; letter-spacing: 2dp; color: #ffb547; }
+.card .nm { position: absolute; left: 112dp; top: 34dp; font-size: 22dp; font-weight: 800; color: #ffffff; }
+.card .meta { position: absolute; left: 112dp; top: 68dp; font-size: 14dp; font-weight: 600; color: #aab3d6; }
+.card .meta .icon { margin-right: 6dp; color: #7d86ab; }
+.card .del { position: absolute; right: 14dp; top: 30dp; width: 44dp; height: 44dp; border-radius: 12dp; text-align: center; line-height: 44dp;
+             font-family: lucide; font-size: 19dp; color: #ff8fa3; background-color: rgba(255,92,122,22); cursor: pointer; }
+.card .del:hover { background-color: rgba(255,92,122,70); color: #ffffff; }
+.card.off { opacity: 0.35; cursor: default; }
+.card.off:hover { background-color: rgba(255,255,255,4); border-color: rgba(255,255,255,40); transform: none; }
+.card .go { position: absolute; right: 14dp; top: 30dp; width: 44dp; height: 44dp; border-radius: 12dp; text-align: center; line-height: 44dp;
+            font-family: lucide; font-size: 19dp; color: #ffd166; background-color: rgba(255,209,102,26); }
+#slots.pick-i .card .go, #slots.pick-i .card.empty .plus { color: #5ad1ff; background-color: rgba(90,209,255,26); }
+#slots.pick-x .card:hover, #slots.pick-x .card.focus { border-color: rgba(255,209,102,220); }
+#slots.pick-i .card:hover, #slots.pick-i .card.focus { border-color: rgba(90,209,255,220); }
+#slots.pick-x .card.off:hover { border-color: rgba(255,255,255,40); }
+#slots.busy #cards { opacity: 0.5; }
+
+/* export / import (top right of the panel): save badge + up / down buttons */
+#sio { position: absolute; right: 22dp; top: 20dp; height: 40dp; padding: 0 4dp 0 12dp; border-radius: 12dp;
+       background-color: rgba(255,255,255,12); border: 1dp rgba(255,255,255,24); }
+#sio .disk { display: inline-block; vertical-align: middle; font-size: 17dp; line-height: 40dp; color: #8f98bb; margin-right: 6dp; }
+#sio .b { position: relative; display: inline-block; vertical-align: middle; width: 34dp; height: 32dp; margin-top: 4dp; border-radius: 9dp;
+          text-align: center; line-height: 32dp; font-size: 17dp; color: #e9edff; cursor: pointer;
+          transition: background-color color 0.12s cubic-out; }
+#sio .b:hover, #sio .b.focus { background-color: rgba(255,255,255,30); }
+#sio .b.focus { box-shadow: rgba(255,209,102,110) 0dp 0dp 0dp 2dp; }
+#sio #x_export.active { color: #1c0b10; background-color: #ffd166; }
+#sio #x_import.active { color: #04131c; background-color: #5ad1ff; }
+#sio .b .tip { display: none; position: absolute; right: 0dp; top: 38dp; white-space: nowrap; padding: 5dp 10dp; border-radius: 8dp;
+               font-family: EpicHearts; font-size: 12dp; font-weight: 700; color: #eef1fb; line-height: 16dp;
+               background-color: rgba(10,12,26,240); border: 1dp rgba(255,255,255,30); }
+#sio .b:hover .tip, #sio .b.focus .tip { display: block; }
+
+.card.empty { border-color: rgba(255,255,255,40); background-color: rgba(255,255,255,4); }
+.card.empty .plus { position: absolute; left: 14dp; top: 12dp; width: 80dp; height: 80dp; border-radius: 14dp; text-align: center; line-height: 80dp;
+                    font-family: lucide; font-size: 30dp; color: #ffd166; background-color: rgba(255,209,102,20); }
+
+/* confirm modal */
+#confirm { position: absolute; left: 0; top: 0; right: 0; bottom: 0; display: none; background-color: #00000099; }
+#confirm.on { display: block; }
+#confirm .box { position: absolute; left: 50%; top: 50%; width: 520dp; margin-left: -260dp; margin-top: -110dp; padding: 28dp 30dp 22dp 30dp; text-align: center; box-sizing: border-box; }
+#confirm .t { font-size: 22dp; font-weight: 800; color: #ffffff; }
+#confirm .d { font-size: 16dp; color: #b9c0dd; margin-top: 10dp; margin-bottom: 22dp; }
+#confirm .btn { margin: 0 6dp; min-width: 140dp; }
+#confirm .d .src { display: block; margin-bottom: 10dp; font-size: 18dp; font-weight: 800; color: #ffffff; }
+#confirm .d .src .icon { color: #7d86ab; margin-right: 6dp; }
+#confirm .btn.danger { color: #ffffff; decorator: linear-gradient(to bottom, #ff6b85, #e0324f); border-color: rgba(255,160,175,150); }
+
+/* notice toast (export / import results) */
+#notice { position: absolute; left: 50%; bottom: 74dp; width: 560dp; margin-left: -280dp; text-align: center; display: none;
+          opacity: 0; transition: opacity 0.2s cubic-out; }
+#notice.on { display: block; opacity: 1; }
+#notice .pill { display: inline-block; padding: 11dp 20dp; border-radius: 999dp; }
+#notice.err .pill { border-color: rgba(255,143,163,120); }
+#n_icon { font-size: 17dp; margin-right: 10dp; color: #6ef0a5; }
+#notice.err #n_icon { color: #ff8fa3; }
+#n_text { font-size: 15dp; font-weight: 700; color: #eef1fb; }
+#footer { position: absolute; left: 92dp; right: 60dp; bottom: 30dp; font-size: 13dp; color: #7d86ab; }
+#footer .r { position: absolute; right: 0; bottom: 0; }
+#footer .r span { margin-left: 14dp; }
+</style>
+</head>
+<body data-block="1" data-model="title">
+  <img id="art" src="" data-bleed="1"/>
+  <div id="shade-t"/><div id="shade-l"/><div id="shade-b"/>
+  <div id="brand">
+    <div class="kicker">FTT · 2026 EDITION</div>
+    <div class="logo">EPIC<span class="h">HEARTS</span></div>
+    <div class="sub">RENOBATIO</div>
+  </div>
+  <div id="menu" data-class-dim="slots_open">
+    <div class="item" id="m_start" data-act="t_start"><span class="icon">&#xe0df;</span>게임 시작<span class="desc" id="m_start_d">{{start_d}}</span></div>
+    <div class="item" id="m_opt" data-act="t_options"><span class="icon">&#xe154;</span>설정<span class="desc">사운드 · 게임 속도 · 화면</span></div>
+    <div class="item" id="m_quit" data-act="t_quit"><span class="icon">&#xe10e;</span>종료</div>
+  </div>
+  <div id="slots" class="glass-strong blur" data-class-on="slots_open" data-class-pick-x="pick == 1" data-class-pick-i="pick == 2" data-class-busy="busy">
+    <h1><span class="icon">&#xe14d;</span>모험 선택</h1>
+    <div id="sio"><span class="disk icon">&#xe14d;</span><span class="b icon" id="x_export" data-act="x_export" data-class-active="pick == 1">&#xe04a;<span class="tip">내보내기</span></span><span class="b icon" id="x_import" data-act="x_import" data-class-active="pick == 2">&#xe042;<span class="tip">가져오기</span></span></div>
+    <div class="hint" id="s_hint" data-rml="s_hint"></div>
+    <div id="cards"><div class="card" data-for="c : cards" data-class-empty="!c.exists" data-class-off="c.off" data-attr-data-act="c.act"><div class="pf" data-if="c.exists"><img data-attr-src="c.face" data-bleed="1"/></div><div class="plus" data-if="!c.exists" data-rml="c.plus"></div><div class="no">{{c.no}}</div><div class="nm" data-rml="c.nm"></div><div class="meta" data-rml="c.meta"></div><div class="del" data-if="c.del" data-attr-data-act="c.del_act">&#xe18d;</div><div class="go" data-if="c.go" data-rml="c.go_icon"></div></div></div>
+  </div>
+  <div id="confirm" data-class-on="modal"><div class="box glass-strong">
+    <div class="t" id="c_t">{{c_t}}</div><div class="d" id="c_d" data-rml="c_d"></div>
+    <div><span class="btn" id="c_no" data-act="c_no">취소</span><span class="btn" id="c_yes" data-act="c_yes" data-class-danger="yes_danger" data-class-primary="yes_primary">{{c_yes}}</span></div>
+  </div></div>
+  <div id="notice" data-class-on="note_on" data-class-err="note_err"><span class="pill glass-strong"><span class="icon" id="n_icon" data-rml="n_icon"></span><span id="n_text" data-rml="n_text"></span></span></div>
+  <div id="footer"><span id="ver">v1.0 · 원작 EpicHearts (2012) 재구현</span><span class="r" id="hints" data-rml="hints"></span></div>
+</body>
+</rml>

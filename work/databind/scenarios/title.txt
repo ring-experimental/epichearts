@@ -1,0 +1,60 @@
+# save: lv14
+# title screen: buttons, slot list, delete confirm, options from the title; back to the title from the menu
+ui dev kbm
+wait 13000
+dump title__main1
+ui key Down
+wait 300
+dump title__nav1
+ui act t_start
+wait 1000
+dump title__slots1
+ui key Down
+wait 300
+dump title__slots1_nav
+ui act del0
+wait 600
+dump title__del_confirm
+ui act c_no
+wait 600
+dump title__del_no
+ui key Escape
+wait 1000
+dump title__back1
+ui act t_start
+wait 1000
+dump title__slots2
+ui key Escape
+wait 1000
+ui act t_options
+wait 1500
+dump options__title1
+ui act o_close
+wait 1500
+dump title__after_opt
+ui act t_options
+wait 1500
+dump options__title2
+ui act o_close
+wait 1500
+ui act t_start
+wait 1000
+ui act save1
+wait 9000
+tap 256 160
+wait 4000
+ui dev kbm
+wait 1500
+ui act menu
+wait 1500
+ui act tab8
+wait 800
+ui act sys_title
+wait 400
+dump menu__title_confirm
+ui act c_yes
+wait 6000
+dump title__main2
+ui act t_start
+wait 1000
+dump title__slots3

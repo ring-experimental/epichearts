@@ -1,0 +1,25 @@
+# short play in the town field (Lv14 save, slot 2): touch-to-move walking and an NPC conversation
+wait 10000
+snap title
+wait 3000
+tap 256 168      # Game Start
+wait 2500
+snap saves
+tap 256 184      # second save slot
+wait 9000
+snap field_popup
+tap 256 160      # dismiss mission popup
+wait 2500
+snap p_start
+tap 380 200      # walk right (Direct control: touch a point to walk there)
+wait 4000
+snap p_walk1
+tap 150 250      # walk down-left
+wait 4000
+snap p_walk2
+tap 156 145      # the NPC by the house (screen position after the camera scrolled): walk there and talk
+wait 5000
+snap p_talk
+tap 256 160      # touch the field again: the balloon closes and the player walks there
+wait 2500
+snap p_talk2

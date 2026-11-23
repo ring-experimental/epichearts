@@ -1,0 +1,40 @@
+<rml>
+<head>
+<title>auto</title>
+<link type="text/rcss" href="theme.rcss"/>
+<style>
+body { pointer-events: none; }
+#root { position: absolute; left: 0; top: 0; right: 0; bottom: 0; }
+.af-dim { position: absolute; left: 0; top: 0; right: 0; bottom: 0; background-color: #04050bd0; }
+.af-form {
+    position: absolute; border-radius: 16dp;
+    background-color: rgba(11, 14, 28, 236);
+    border: 1dp rgba(255, 255, 255, 30);
+    box-shadow: rgba(0, 0, 0, 160) 0dp 6dp 20dp 0dp, rgba(255, 255, 255, 16) 0dp 1dp 0dp 0dp inset; /* small: see theme.rcss .glass */
+}
+.af-panel { position: absolute; border-radius: 10dp; background-color: rgba(255, 255, 255, 9); border: 1dp rgba(255, 255, 255, 14); }
+.af-btn {
+    position: absolute; border-radius: 10dp;
+    background-color: rgba(255, 255, 255, 16); border: 1dp rgba(255, 255, 255, 34);
+    box-shadow: rgba(0, 0, 0, 90) 0dp 3dp 8dp 0dp;
+}
+.af-btn.on { background-color: rgba(255, 196, 120, 46); border-color: rgba(255, 209, 102, 150); }
+.af-btn.off { opacity: 0.45; }
+.af-focus { border-color: #ffd166; box-shadow: rgba(255, 209, 102, 120) 0dp 0dp 0dp 2dp, rgba(255, 209, 102, 60) 0dp 0dp 18dp 0dp; }
+.af-cell { position: absolute; border-radius: 8dp; background-color: rgba(255, 255, 255, 7); border: 1dp rgba(255, 255, 255, 18); }
+.af-cell.sel { background-color: rgba(255, 209, 102, 30); border-color: #ffd166; }
+.af-clip { position: absolute; overflow: hidden; }
+.af-t { position: absolute; white-space: nowrap; font-weight: 600; font-effect: shadow(0dp 1dp #00000099); }
+.af-n { position: absolute; white-space: nowrap; font-weight: 800; color: #ffffff; font-effect: outline(1dp #000000a0); }
+img.af-s { position: absolute; }
+.af-filter { position: absolute; left: 0; top: 0; right: 0; bottom: 0; background-color: rgba(14,16,34,168); }
+/* words the original drew as pixel pictures (wordimg.h) */
+.af-w { position: absolute; white-space: nowrap; font-weight: 700; font-effect: shadow(0dp 1dp #00000099); }
+img.af-cv { position: absolute; }
+.af-ic { position: absolute; text-align: center; font-family: lucide; color: #e9edff; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+</body>
+</rml>

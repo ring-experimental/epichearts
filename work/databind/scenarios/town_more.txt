@@ -1,0 +1,63 @@
+# save: lv14
+# town paths the town scenario does not take (data-binding batch 2): the farm's feeding (i1) and hatching (i2) pages
+# (the hatching page's timers redraw every second), a special book's page popup (b12 is owned in the lv14 save),
+# the shop's sell mode (i1) with a category change
+@prefix
+ui act town
+wait 1500
+ui act fn5
+wait 2000
+ui act i1
+wait 2500
+dump farm__feed1
+ui key Down
+wait 300
+dump farm__feed_nav
+ui act close
+wait 2000
+ui act fn5
+wait 2000
+ui act i2
+wait 2500
+dump farm__hatch1
+ui key Down
+wait 2500
+dump farm__hatch_nav
+ui act close
+wait 2000
+ui act fn0
+wait 2000
+ui act i0
+wait 2500
+ui act b12
+wait 500
+dump skillbook__b12
+ui act open
+wait 1500
+dump skillbook__page1
+ui act pnext
+wait 800
+dump skillbook__page_next
+ui act pclose
+wait 1500
+dump skillbook__page_closed
+ui act close
+wait 2000
+ui act fn1
+wait 2000
+ui act i1
+wait 2500
+dump store__sell1
+ui act r1
+wait 500
+dump store__sell_r1
+ui act cat2
+wait 500
+dump store__sell_cat2
+ui key Down
+wait 300
+dump store__sell_nav
+ui act close
+wait 2000
+ui act tw_close
+wait 1500

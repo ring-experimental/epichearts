@@ -1,0 +1,163 @@
+# save: lv14
+# town services: choices (dialogs), inn special books (skillbook), shop (store), smith / alchemist (smithy, every
+# mode reopened from the town), farm; then the field map from the HUD (map) in
+# the field 2/1 (세이프우드 중앙지역; the town house has no map)
+# smith choice: i0 수리 (repair), i1 제련 (refine), i2 강화 (enchant), i3 복구 (restore); alchemist: i0 녹이기, i1 스캔
+@prefix
+ui act town
+wait 1500
+dump town__open1
+ui key Right
+wait 300
+dump town__nav1
+ui act fn0
+wait 2000
+dump dialogs__inn_choice
+ui act i0
+wait 2500
+dump skillbook__inn1
+ui act b1
+wait 500
+dump skillbook__b1
+ui key Down
+wait 300
+dump skillbook__nav1
+ui act close
+wait 2000
+dump town__inn_closed
+ui act fn0
+wait 2000
+ui act i0
+wait 2500
+dump skillbook__inn2
+ui act close
+wait 2000
+ui act fn1
+wait 2000
+dump dialogs__shop_choice
+ui act i0
+wait 2500
+dump store__buy1
+ui act r1
+wait 500
+dump store__buy1_r1
+ui act cat1
+wait 500
+dump store__buy1_cat1
+ui act deal
+wait 1000
+dump dialogs__store_count
+ui key Right
+wait 300
+dump dialogs__store_count_right
+ui act b2
+wait 1000
+dump store__count_cancelled
+ui act close
+wait 2000
+dump store__closed
+ui act fn1
+wait 2000
+ui act i0
+wait 2500
+dump store__buy2
+ui act close
+wait 2000
+ui act fn2
+wait 2000
+dump dialogs__smith_choice
+ui act i0
+wait 2500
+dump smithy__smith_i0
+ui act l1
+wait 500
+dump smithy__smith_i0_l1
+ui act close
+wait 2000
+ui act fn2
+wait 2000
+ui act i1
+wait 2500
+dump smithy__smith_i1
+ui act close
+wait 2000
+ui act fn2
+wait 2000
+ui act i2
+wait 2500
+dump smithy__smith_i2
+ui act l1
+wait 500
+dump smithy__smith_i2_l1
+ui act close
+wait 2000
+ui act fn2
+wait 2000
+ui act i3
+wait 2500
+dump smithy__smith_i3
+ui act close
+wait 2000
+ui act fn2
+wait 2000
+ui act i0
+wait 2500
+dump smithy__smith_i0_reopen
+ui act close
+wait 2000
+ui act fn3
+wait 2000
+dump dialogs__alch_choice
+ui act i0
+wait 2500
+dump smithy__alch_i0
+ui act close
+wait 2000
+ui act fn3
+wait 2000
+ui act i1
+wait 2500
+dump smithy__alch_i1
+ui act close
+wait 2000
+ui act fn5
+wait 2000
+dump dialogs__farm_choice
+ui act i0
+wait 2500
+dump farm__open1
+ui act r1
+wait 500
+dump farm__r1
+ui act close
+wait 2000
+ui act fn5
+wait 2000
+ui act i0
+wait 2500
+dump farm__open2
+ui act close
+wait 2000
+dump town__before_close
+ui act tw_close
+wait 1500
+dump town__closed
+ui dev warp 2 1
+wait 8000
+ui act map
+wait 2500
+dump map__open1
+ui act zoom
+wait 1000
+dump map__zoom
+ui act zoom
+wait 1000
+dump map__unzoom
+ui act close
+wait 1500
+dump map__closed
+ui act map
+wait 2500
+dump map__open2
+ui act close
+wait 1500

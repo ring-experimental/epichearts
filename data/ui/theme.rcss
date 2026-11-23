@@ -1,0 +1,157 @@
+/* EpicHearts — interface design system.
+   Deep-night glass panels, warm ember accents, the original game's font (NanumGothic Bold, from the original APK), Lucide icons.
+   Units are dp (1280x720 reference; the host scales dp to the window). */
+
+div, p, h1, h2, h3, h4, section, header, footer, ul, li, form { display: block; }
+img { display: inline-block; }
+
+body {
+    font-family: EpicHearts;
+    font-weight: 500;
+    font-size: 17dp;
+    color: #eef1fb;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+/* ---------- tokens (as classes; RCSS has no variables) ---------- */
+.ink        { color: #eef1fb; }
+.muted      { color: #9aa3c2; }
+.dim        { color: #6b7394; }
+.gold       { color: #ffd166; }
+.rose       { color: #ff5c7a; }
+.cyan       { color: #5ad1ff; }
+.green      { color: #6ef0a5; }
+
+.icon {
+    font-family: lucide;
+    font-weight: normal;
+    font-style: normal;
+}
+
+/* ---------- glass panel ---------- */
+.glass {
+    background-color: rgba(13, 16, 32, 200);
+    border: 1dp rgba(255, 255, 255, 22);
+    border-radius: 14dp;
+    /* RmlUi renders box-shadows into a texture that may not exceed the window (GeometryBoxShadow.cpp clamps and the
+       result is stretched): keep blur + offset below the 28dp margins of full-height panels */
+    box-shadow: rgba(0, 0, 0, 120) 0dp 6dp 16dp 0dp, rgba(255, 255, 255, 14) 0dp 1dp 0dp 0dp inset;
+}
+.glass-strong {
+    background-color: rgba(10, 12, 26, 232);
+    border: 1dp rgba(255, 255, 255, 26);
+    border-radius: 18dp;
+    box-shadow: rgba(0, 0, 0, 150) 0dp 6dp 20dp 0dp, rgba(255, 255, 255, 18) 0dp 1dp 0dp 0dp inset;
+}
+.blur { backdrop-filter: blur(14dp); }
+
+/* ---------- chips / pills ---------- */
+.chip {
+    display: inline-block;
+    padding: 4dp 10dp;
+    border-radius: 999dp;
+    background-color: rgba(255, 255, 255, 18);
+    border: 1dp rgba(255, 255, 255, 20);
+    font-size: 13dp;
+    font-weight: 600;
+    color: #dfe5ff;
+}
+
+/* ---------- input glyphs (keyboard keycap / gamepad face buttons) ---------- */
+.glyph {
+    display: inline-block;
+    min-width: 22dp;
+    height: 22dp;
+    line-height: 22dp;
+    padding: 0 6dp;
+    text-align: center;
+    font-size: 12dp;
+    font-weight: 800;
+    border-radius: 6dp;
+    color: #0c0f1d;
+    background-color: #e9edff;
+    box-shadow: rgba(0, 0, 0, 120) 0dp 2dp 0dp 0dp;
+}
+.glyph.pad { border-radius: 999dp; min-width: 22dp; padding: 0; color: #ffffff; }
+.glyph.xa { background-color: #2fb24c; }
+.glyph.xb { background-color: #e0403a; }
+.glyph.xx { background-color: #2f7de0; }
+.glyph.xy { background-color: #e7b81f; color: #1b1400; }
+.glyph.ps { background-color: #1d2238; border: 1dp rgba(255,255,255,60); font-family: lucide; font-weight: normal; font-size: 11dp; }
+.glyph.ps.cross { color: #8fb6ff; }
+.glyph.ps.circle { color: #ff7d86; }
+.glyph.ps.square { color: #f5a0e6; }
+.glyph.ps.triangle { color: #5ff0c8; }
+.glyph.bumper { border-radius: 6dp; background-color: #3a4166; color: #e8ecff; min-width: 28dp; }
+
+/* ---------- buttons ---------- */
+button, .btn {
+    display: inline-block;
+    font-family: EpicHearts;
+    font-weight: 700;
+    font-size: 16dp;
+    color: #f3f5ff;
+    text-align: center;
+    padding: 12dp 22dp;
+    border-radius: 12dp;
+    background-color: rgba(30, 35, 62, 235);
+    border: 1dp rgba(255, 255, 255, 30);
+    transition: background-color border-color transform 0.12s cubic-out;
+    cursor: pointer;
+}
+button:hover, .btn:hover { background-color: rgba(48, 55, 92, 245); border-color: rgba(255, 255, 255, 70); }
+button:active, .btn:active { transform: scale(0.97); }
+.btn.primary {
+    color: #1c0b10;
+    background-color: #ffb36b;
+    decorator: linear-gradient(to bottom, #ffc98a, #ff8f5c);
+    border-color: rgba(255, 220, 190, 160);
+    box-shadow: rgba(255, 120, 80, 90) 0dp 6dp 22dp 0dp;
+}
+.btn.primary:hover { decorator: linear-gradient(to bottom, #ffd7a3, #ffa070); }
+.btn:focus-visible, button:focus-visible, .focus {
+    border-color: #ffd166;
+    box-shadow: rgba(255, 209, 102, 110) 0dp 0dp 0dp 2dp;
+}
+
+/* ---------- bars ---------- */
+.bar {
+    position: relative;
+    height: 12dp;
+    border-radius: 999dp;
+    background-color: rgba(255, 255, 255, 20);
+    overflow: hidden;
+}
+.bar .ghost, .bar .fill {
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    border-radius: 999dp;
+}
+.bar .ghost { background-color: rgba(255, 255, 255, 110); transition: width 0.6s cubic-in-out; }
+.bar .fill { transition: width 0.15s cubic-out; }
+.bar.hp .fill { decorator: linear-gradient(to right, #ff3d61, #ff8f5c); }
+.bar.mp .fill { decorator: linear-gradient(to right, #3a8dff, #5ae0ff); }
+.bar.xp .fill { decorator: linear-gradient(to right, #ffb347, #ffe08a); }
+.bar.boss .fill { decorator: linear-gradient(to right, #b0183a, #ff4d5e); }
+.bar.foe .fill { decorator: linear-gradient(to right, #36c46b, #9cf27a); }
+.glyph.ico { font-family: lucide; font-weight: normal; font-size: 12dp; }
+/* D-pad direction: a pad-coloured key with a chevron */
+.glyph.dpad { min-width: 22dp; padding: 0; border-radius: 6dp; font-family: lucide; font-weight: normal; font-size: 13dp; color: #ffffff; background-color: #3a4166; border: 1dp rgba(255,255,255,60); }
+
+/* ---------- scrollbars (RmlUi needs explicit sizes) ---------- */
+scrollbarvertical { width: 6dp; margin-left: 4dp; }
+scrollbarvertical slidertrack { background-color: rgba(255, 255, 255, 10); border-radius: 3dp; }
+scrollbarvertical sliderbar { background-color: rgba(255, 255, 255, 60); border-radius: 3dp; min-height: 24dp; }
+scrollbarvertical sliderbar:hover { background-color: rgba(255, 209, 102, 140); }
+scrollbarvertical sliderarrowdec, scrollbarvertical sliderarrowinc { height: 0; }
+scrollbarhorizontal { height: 0; }
+
+/* no confirm / cancel / select prompt bars: obvious actions are not explained (they break immersion);
+   prompts stay only on the controls they trigger (quickslots, HUD buttons, tab bumpers) */
+#hint, #hints, #foot, #nfoot { display: none; }
+
+/* bottom fade over a scrolling list: the last row reads as "more below" instead of being cut */
+.lfade { position: absolute; z-index: 5; height: 44dp; pointer-events: none; decorator: linear-gradient(to bottom, #0a0c1a00, #0a0c1af2); }

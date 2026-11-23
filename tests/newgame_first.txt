@@ -1,0 +1,9 @@
+# first play with no save files: Game Start goes straight into the prologue (Raban)
+wait 10000
+snap title
+wait 3000
+tap 256 168      # Game Start
+wait 8000
+snap first1
+wait 6000
+snap first2

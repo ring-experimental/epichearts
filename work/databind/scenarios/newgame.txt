@@ -1,0 +1,30 @@
+# save: none
+# new game prologue: story dialogue controls (talkctl: log / auto / skip) and the tutorial help picture it stops at.
+# (character select does not come up early in a new game: it is covered by misc.txt through `ui dev uiwnd 27`)
+ui dev kbm
+wait 12000
+ui act t_start
+wait 800
+ui act save0
+until talk kind @30000
+wait 1500
+dump talkctl__talk1
+ui act tlog
+wait 800
+dump talkctl__log1
+ui act tlogclose
+wait 800
+dump talkctl__log_closed
+ui act tauto
+wait 600
+dump talkctl__auto_on
+ui act tauto
+wait 600
+dump talkctl__auto_off
+ui act tskip
+until 0x33 @30000
+wait 1500
+dump helpfull__newgame
+ui act next
+wait 1500
+dump helpfull__newgame_closed

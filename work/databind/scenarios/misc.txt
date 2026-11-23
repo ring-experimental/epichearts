@@ -1,0 +1,70 @@
+# save: lv14
+# dev-opened windows: collection, special books, tutorial help picture, world map (generic renderer = autoscreen),
+# prologue crawl (talkctl crawl mode); character select last (cs_cancel on the class change goes back to the title,
+# and `ui dev uiwnd 27` on the title crashes the game, so it is opened once and not closed)
+@prefix
+ui dev uiwnd ff 16
+wait 2000
+dump collection__open1
+ui act c1
+wait 600
+dump collection__c1
+ui key Right
+wait 300
+dump collection__nav1
+ui act close
+wait 1500
+ui dev uiwnd ff 16
+wait 2000
+dump collection__open2
+ui act close
+wait 1500
+ui dev uiwnd e 0
+wait 2000
+dump skillbook__dev1
+ui act b2
+wait 500
+dump skillbook__dev_b2
+ui key Escape
+wait 1500
+ui dev uiwnd 33 0
+wait 2000
+dump helpfull__open1
+ui act next
+wait 1500
+dump helpfull__closed
+ui dev uiwnd 33 0
+wait 2000
+dump helpfull__open2
+ui act next
+wait 1500
+ui dev worldmap 1
+wait 2500
+dump autoscreen__worldmap1
+ui key Escape
+wait 1500
+dump autoscreen__worldmap_closed
+ui dev worldmap 1
+wait 2500
+dump autoscreen__worldmap2
+ui key Escape
+wait 1500
+ui dev crawl
+wait 2500
+dump talkctl__crawl1
+ui act tffwd
+wait 1000
+dump talkctl__crawl_ffwd
+ui act tskip
+wait 3000
+dump talkctl__crawl_skipped
+wait 2000
+ui dev uiwnd 27 0
+wait 2500
+dump charselect__open1
+ui key Right
+wait 1200
+dump charselect__right
+ui act cls2
+wait 1200
+dump charselect__cls2

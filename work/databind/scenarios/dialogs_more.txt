@@ -1,0 +1,55 @@
+# save: lv14
+# dialogs forms the other scenarios do not open (data-binding batch 4), in the field 2/1 (세이프우드 중앙지역; in the
+# town a script takes the player outside):
+# - linkstone (0x13): the world map (`ui dev worldmap 1`, as script cmd 0xA7), OK on it (cFormWorldMap::OnKeyPress
+#   @000fd94c key 0x30 -> ShowLinkstoneChoiceWnd @000fd6d8); cancel back to the map and open it again. Done first:
+#   after the resurrect list's give-up (i2) the world map's OK crashed in a script talk balloon
+#   (cTalkBallonWnd::SetBalloonType, cflScript::MakeTalkBallon), not taken here
+# - resurrect (0x14): `ui dev suicide` (cGameWorld::DoSuicide @0012a5ac) -> the death list; with the gold for the instant
+#   revival (rgold on, focused) -> rgold; then the gold taken down below its price (rgold off, the focus on i2) -> die
+#   again -> rgold refused -> i2 (give up)
+@prefix
+ui dev warp 2 1
+wait 8000
+ui dev worldmap 1
+wait 2500
+ui key Return
+until top 0x13
+wait 1000
+dump dialogs__ls_open
+ui key Down
+wait 300
+dump dialogs__ls_nav
+ui act cancel
+wait 1500
+dump dialogs__ls_closed
+ui key Return
+until top 0x13
+wait 1000
+dump dialogs__ls_reopen
+ui key Escape
+wait 1500
+ui key Escape
+wait 2000
+ui dev suicide
+until top 0x14
+wait 1500
+dump dialogs__res_gold
+ui key Down
+wait 300
+dump dialogs__res_nav
+ui act rgold
+wait 3000
+dump dialogs__res_revived
+ui dev gold -2000
+wait 500
+ui dev suicide
+until top 0x14
+wait 1500
+dump dialogs__res_nogold
+ui act rgold
+wait 1000
+dump dialogs__res_nogold_rgold
+ui act i2
+wait 6000
+dump dialogs__res_giveup

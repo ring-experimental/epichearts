@@ -1,0 +1,12 @@
+/* libmain.so: only what Android and SDL's Java side look up by name: JNI_OnLoad, SDL_main (SDLActivity runs it
+   through dlsym) and the JNI methods (Java_*; SDL registers most with RegisterNatives, the rest resolve by name).
+   Everything else stays local, which
+   drops the 18,000-entry dynamic symbol table (debugging uses the unstripped build-android/native-<abi>/libmain.so). */
+{
+  global:
+    JNI_OnLoad;
+    SDL_main;
+    Java_*;
+  local:
+    *;
+};

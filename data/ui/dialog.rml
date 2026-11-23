@@ -1,0 +1,21 @@
+<rml>
+<head>
+<title>dialog</title>
+<link type="text/rcss" href="theme.rcss"/>
+<link type="text/rcss" href="dialog.rcss"/>
+</head>
+<body data-block="1" data-model="dialog">
+<div id="scrim"/>
+<div id="wrap"><div id="box" class="glass-strong blur">
+  <div id="kicker">{{kicker}}</div>
+  <div id="title" data-if="title != ''" data-rml="title"></div>
+  <div id="sub" data-if="sub != ''" data-rml="sub"></div>
+  <div id="body" data-if="body != ''" data-rml="body"></div>
+  <div id="rows" data-if="rows.size > 0"><div class="rh" data-rml="rows_title"></div><div class="rw" data-for="r : rows"><img data-attr-src="r.src"/><span data-rml="r.text"></span></div></div>
+  <div id="items" data-if="items.size > 0"><div class="it" data-for="it : items" data-class-off="it.off" data-attr-data-act="it.act" data-rml="it.rml"></div></div>
+  <div id="count" data-class-on="is_count"><span class="b" data-act="c-10" data-nonav="1">&#xe06e;&#xe06e;</span><span class="b" data-act="c-1" data-nonav="1">&#xe06e;</span><span class="v">{{count}}<span class="m"> / {{count_max}}</span></span><span class="b" data-act="c+1" data-nonav="1">&#xe06f;</span><span class="b" data-act="c+10" data-nonav="1">&#xe06f;&#xe06f;</span></div>
+  <div id="btns"><span class="btn" data-for="b : btns" data-attr-data-act="b.act" data-rml="b.cap"></span><span class="btn primary" data-if="primary" data-act="b0" data-rml="primary_cap"></span></div>
+  <div id="hint" data-rml="hint"></div>
+</div></div>
+</body>
+</rml>

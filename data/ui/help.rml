@@ -1,0 +1,64 @@
+<rml>
+<head>
+<title>help</title>
+<link type="text/rcss" href="theme.rcss"/>
+<style>
+/* help (help.cpp, replaces cFormHelp form 0x23): topic list, a topic page, the rescue confirmation */
+body { display: none; }
+body.on { display: block; }
+#scrim { position: absolute; left: 0; top: 0; right: 0; bottom: 0; background-color: #03040acc; }
+#panel { position: absolute; left: 50%; top: 24dp; bottom: 24dp; width: 780dp; margin-left: -390dp; padding: 28dp 32dp; box-sizing: border-box; }
+#head { position: relative; height: 44dp; }
+#head .kick { font-size: 12dp; font-weight: 800; letter-spacing: 3dp; color: #ffb547; }
+#head h1 { font-size: 24dp; font-weight: 800; color: #ffffff; margin-top: 2dp; }
+.hb { position: absolute; top: 0; width: 42dp; height: 42dp; line-height: 42dp; text-align: center; border-radius: 12dp;
+      font-family: lucide; font-size: 20dp; color: #c9d1f2; background-color: rgba(255,255,255,14); cursor: pointer; }
+.hb:hover, .hb.focus { background-color: rgba(255,255,255,34); color: #ffffff; }
+#hclose { right: 0; }
+#hback { right: 52dp; display: none; }
+body.page #hback { display: block; }
+#listwrap, #pagewrap { position: absolute; left: 32dp; right: 32dp; top: 96dp; bottom: 26dp; }
+#pagewrap { display: none; }
+body.page #listwrap { display: none; }
+body.page #pagewrap { display: block; }
+#list { position: absolute; left: 0; right: 0; top: 0; bottom: 0; overflow-y: auto; padding-right: 6dp; }
+.tp { display: inline-block; width: 344dp; height: 54dp; line-height: 54dp; margin: 0 8dp 8dp 0; padding: 0 16dp; border-radius: 12dp; cursor: pointer;
+      font-size: 16dp; font-weight: 700; color: #eef1fb; background-color: rgba(255,255,255,7); border: 1dp rgba(255,255,255,0); box-sizing: border-box;
+      white-space: nowrap; overflow: hidden; }
+.tp .n { display: inline-block; width: 34dp; font-size: 13dp; font-weight: 800; color: #ffb547; }
+.tp:hover, .tp.focus { background-color: rgba(255,255,255,16); border-color: rgba(255,209,102,150); }
+.none { padding: 40dp 0; text-align: center; color: #8d96ba; }
+#ptitle { font-size: 20dp; font-weight: 800; color: #ffd166; }
+#pbody { position: absolute; left: 0; right: 0; top: 40dp; bottom: 64dp; overflow-y: auto; padding-right: 10dp; font-size: 16dp; line-height: 28dp; color: #dfe4fa; }
+#pacts { position: absolute; left: 0; right: 0; bottom: 0; height: 48dp; text-align: right; }
+#rescue { display: block; }
+#rescue .icon { font-family: lucide; margin-right: 8dp; }
+/* rescue confirmation */
+#cscrim { position: absolute; left: 0; top: 0; right: 0; bottom: 0; background-color: #03040a99; display: none; }
+#cbox { position: absolute; left: 50%; top: 50%; width: 520dp; margin-left: -260dp; margin-top: -110dp; padding: 26dp 28dp 22dp 28dp; display: none; }
+body.confirm #cscrim, body.confirm #cbox { display: block; }
+#cbox .t { font-size: 20dp; font-weight: 800; color: #ffffff; }
+#cbox .b { margin-top: 10dp; font-size: 15dp; line-height: 25dp; color: #c9d1ee; }
+#cbox .acts { margin-top: 20dp; text-align: right; }
+#cbox .btn { margin-left: 10dp; min-width: 120dp; }
+</style>
+</head>
+<body data-block="1" data-model="help" data-class-page="page" data-class-confirm="confirm">
+<div id="scrim"/>
+<div id="panel" class="glass-strong blur">
+  <div id="head"><div class="kick">HELP</div><h1>도움말</h1><div class="hb" id="hback" data-act="hback">&#xe06e;</div><div class="hb" id="hclose" data-act="hclose">&#xe1b2;</div></div>
+  <div id="listwrap"><div id="list"><div class="tp" data-for="t : list" data-class-sel="t.sel" data-attr-data-act="t.act" data-rml="t.rml"></div><div class="none" data-if="list.size == 0">불러오는 중…</div></div></div>
+  <div id="pagewrap">
+    <div id="ptitle" data-rml="ptitle"></div>
+    <div id="pbody" data-rml="pbody"></div>
+    <div id="pacts"><span class="btn" id="rescue" data-act="rescue" data-if="rescue"><span class="icon">&#xe101;</span>구조 요청</span></div>
+  </div>
+</div>
+<div id="cscrim"/>
+<div id="cbox" class="glass-strong blur">
+  <div class="t">구조 요청</div>
+  <div class="b">지형에 끼어 움직일 수 없을 때 사용합니다.<br/>마을에서는 정해진 위치로 옮겨지고, 그 밖의 곳에서는 전투 불능이 됩니다.</div>
+  <div class="acts"><span class="btn" id="c_no" data-act="c_no">취소</span><span class="btn primary" id="c_yes" data-act="c_yes">구조 요청</span></div>
+</div>
+</body>
+</rml>

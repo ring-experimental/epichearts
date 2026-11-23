@@ -1,0 +1,41 @@
+# remaining town services and the world map (loaded save slot 2, in town)
+wait 10000
+snap title
+tap 256 168      # Game Start
+wait 2500
+snap saves
+tap 256 184      # second save slot
+wait 9000
+snap field_popup
+tap 256 160      # dismiss mission popup
+wait 2000
+tap 484 20       # Town button
+wait 2000
+tap 183 128      # 대장장이 -> submenu
+wait 2500
+snap t_smith
+tap 256 160      # 장비 강화
+wait 2500
+snap t_enchant
+tap 108 31       # 닫기
+wait 2000
+tap 256 280      # 나가기
+wait 2000
+tap 328 128      # 연금술사
+wait 2500
+snap t_alch
+tap 256 260      # 나가기 (5 items)
+wait 2000
+tap 183 180      # 제조도안
+wait 2500
+snap t_craft     # locked at this point of the story: notice popup
+tap 256 212      # 확인
+wait 2000
+tap 328 180      # 농장
+wait 2500
+snap t_farm
+tap 256 260      # 나가기 (5 items)
+wait 2000
+tap 484 75       # Map
+wait 3000
+snap t_map

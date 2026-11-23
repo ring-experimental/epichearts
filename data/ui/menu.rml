@@ -1,0 +1,325 @@
+<rml>
+<head>
+<title>menu</title>
+<link type="text/rcss" href="theme.rcss"/>
+<style>
+body { display: none; }
+body.on { display: block; animation: 0.18s cubic-out 1 menuin; }
+@keyframes menuin { from { opacity: 0; } to { opacity: 1; } }
+#scrim { position: absolute; left: 0; top: 0; right: 0; bottom: 0; background-color: #05060cd8; }
+
+/* rail */
+#rail { position: absolute; left: 28dp; top: 28dp; bottom: 28dp; width: 92dp; padding: 14dp 0; box-sizing: border-box; text-align: center; }
+.tab { display: block; position: relative; width: 70dp; height: 60dp; margin: 0 auto 2dp auto; border-radius: 16dp; cursor: pointer; color: #8892b6;
+       transition: background-color color 0.12s cubic-out; }
+.tab .icon { display: block; font-size: 23dp; padding-top: 7dp; }
+.tab .t { display: block; font-size: 11dp; font-weight: 700; margin-top: 3dp; }
+.tab:hover { background-color: rgba(255,255,255,12); color: #e9edff; }
+.tab.sel { background-color: rgba(255,209,102,30); color: #ffd166; }
+.tab.focus { box-shadow: rgba(255,209,102,120) 0dp 0dp 0dp 2dp; }
+.tab .dot { position: absolute; right: 10dp; top: 8dp; width: 9dp; height: 9dp; border-radius: 5dp; background-color: #ff5c7a; display: none; }
+.tab .dot.on { display: block; }
+/* fixed height: the tab-key prompt comes and goes with the input device, the tabs must not move */
+#rail .bump { display: block; height: 24dp; margin: 2dp auto 6dp auto; text-align: center; }
+body.touch #rail .bump { display: none; }
+
+/* main */
+#main { position: absolute; left: 136dp; right: 28dp; top: 28dp; bottom: 28dp; padding: 26dp 30dp; box-sizing: border-box; }
+#top { position: relative; height: 46dp; }
+#top h1 { font-size: 30dp; font-weight: 800; color: #ffffff; }
+#top .sub { position: absolute; left: 0; top: 38dp; font-size: 13dp; color: #8892b6; }
+#topright { position: absolute; right: 0; top: 4dp; }
+#topright .chip { margin-left: 8dp; font-size: 14dp; padding: 6dp 12dp; }
+#topright .icon { color: #ffd166; margin-right: 6dp; }
+#closebtn { display: inline-block; margin-left: 10dp; width: 38dp; height: 34dp; line-height: 34dp; text-align: center; border-radius: 10dp; font-family: lucide;
+            font-size: 18dp; color: #c9d1f2; background-color: rgba(255,255,255,14); cursor: pointer; vertical-align: middle; }
+#closebtn:hover { background-color: rgba(255,92,122,80); color: #ffffff; }
+.page { display: none; position: absolute; left: 30dp; right: 30dp; top: 96dp; bottom: 56dp; }
+.page.on { display: block; }
+#foot { position: absolute; left: 30dp; right: 30dp; bottom: 18dp; font-size: 13dp; color: #8892b6; }
+#foot span { margin-right: 18dp; }
+
+/* character page */
+#cv { position: absolute; left: 0; top: 0; bottom: 0; width: 330dp; border-radius: 18dp; overflow: hidden;
+      decorator: linear-gradient(to bottom, #2a2f5c, #12142a); border: 1dp rgba(255,255,255,24); }
+#cv img { position: absolute; left: 25dp; top: 30dp; width: 280dp; height: 280dp; }
+/* the portrait art ends in a straight cut: fade it into the card */
+#cv .pfade { position: absolute; left: 0; right: 0; top: 236dp; height: 80dp; decorator: linear-gradient(to bottom, #1d214200, #1c2040 85%); }
+#cv .glow { position: absolute; left: 40dp; top: 80dp; width: 250dp; height: 250dp; border-radius: 125dp; decorator: radial-gradient(circle, #ffb5473a, #ffb54700); }
+#cvname { position: absolute; left: 22dp; bottom: 92dp; font-size: 30dp; font-weight: 800; color: #ffffff; }
+#cvtitle { position: absolute; left: 14dp; bottom: 62dp; padding: 3dp 8dp; border-radius: 8dp; font-size: 14dp; font-weight: 600; color: #ffd166; }
+#cvtitle .icon { font-size: 12dp; margin-left: 6dp; color: #b39550; }
+#cvtitle:hover, #cvtitle.focus { background-color: rgba(255,209,102,30); }
+#cvlv { position: absolute; left: 22dp; right: 22dp; bottom: 20dp; height: 36dp; }
+#cvlv .lv { position: absolute; left: 0; top: 0; font-size: 13dp; font-weight: 800; color: #ffe39a; }
+#cvlv .bar { position: absolute; left: 0; right: 0; top: 24dp; height: 8dp; }
+#cvlv .xpt { position: absolute; right: 0; top: 1dp; font-size: 12dp; color: #aab3d6; }
+#stats { position: absolute; left: 352dp; right: 0; top: 0; bottom: 0; }
+.card { border-radius: 16dp; background-color: rgba(255,255,255,8); border: 1dp rgba(255,255,255,18); padding: 16dp 18dp; margin-bottom: 14dp; }
+.card h2 { font-size: 13dp; font-weight: 800; letter-spacing: 1.5dp; color: #ffb547; margin-bottom: 10dp; }
+.card h2 .r { float: right; color: #aab3d6; letter-spacing: 0; font-weight: 700; }
+.statline { position: relative; height: 40dp; border-radius: 10dp; }
+.statline .k { position: absolute; left: 8dp; top: 10dp; font-size: 15dp; font-weight: 700; color: #c9d1f2; }
+.statline .k .icon { margin-right: 10dp; color: #8892b6; }
+.statline .v { position: absolute; right: 64dp; top: 8dp; font-size: 19dp; font-weight: 800; color: #ffffff; }
+.statline .p { position: absolute; right: 64dp; top: 30dp; font-size: 10dp; color: #6ef0a5; }
+.statline .plus { position: absolute; right: 8dp; top: 5dp; width: 44dp; height: 30dp; line-height: 30dp; text-align: center; border-radius: 9dp; font-family: lucide;
+                  font-size: 16dp; color: #1c0b10; decorator: linear-gradient(to bottom, #ffd59a, #ffad66); cursor: pointer; display: none; }
+.statline .plus.on { display: block; }
+.statline .plus:hover, .statline .plus.focus { box-shadow: #ffd166 0dp 0dp 0dp 2dp; }
+.grid2 { }
+.cell2 { display: inline-block; width: 49%; height: 46dp; position: relative; }
+.cell2 .k { position: absolute; left: 6dp; top: 4dp; font-size: 12dp; font-weight: 700; color: #8892b6; }
+.cell2 .v { position: absolute; left: 6dp; top: 20dp; font-size: 18dp; font-weight: 800; color: #f3f5ff; }
+
+/* quests */
+#qlist { position: absolute; left: 0; top: 0; bottom: 150dp; width: 360dp; overflow-y: auto; }
+#qsum { position: absolute; left: 0; bottom: 0; width: 360dp; height: 134dp; padding: 16dp 18dp; box-sizing: border-box; border-radius: 16dp;
+        background-color: rgba(255,255,255,6); border: 1dp rgba(255,255,255,14); }
+#qsum .h { font-size: 12dp; font-weight: 800; letter-spacing: 1.5dp; color: #8892b6; margin-bottom: 12dp; }
+#qsum .g { display: flex; }
+#qsum .c { flex: 1; }
+#qsum .v { font-size: 26dp; font-weight: 800; color: #ffffff; }
+#qsum .k { font-size: 12dp; font-weight: 700; color: #8892b6; margin-top: 2dp; }
+#qsum .c.ok .v { color: #6ef0a5; }
+.q { position: relative; padding: 14dp 16dp; margin-bottom: 8dp; border-radius: 14dp; cursor: pointer; background-color: rgba(255,255,255,7); border: 1dp rgba(255,255,255,14); }
+.q:hover, .q.focus { background-color: rgba(255,255,255,16); }
+.q.sel { border-color: rgba(255,209,102,170); background-color: rgba(255,209,102,20); }
+.q .kind { font-size: 11dp; font-weight: 800; letter-spacing: 1dp; color: #ffb547; }
+.q .kind.sub { color: #5ad1ff; }
+.q .nm { font-size: 16dp; font-weight: 700; color: #ffffff; margin-top: 4dp; }
+.q .st { position: absolute; right: 14dp; top: 14dp; font-size: 11dp; font-weight: 800; padding: 3dp 8dp; border-radius: 6dp; background-color: rgba(255,255,255,14); color: #c9d1f2; }
+.q .st.done { background-color: rgba(110,240,165,40); color: #6ef0a5; }
+#qdetail { position: absolute; left: 380dp; right: 0; top: 0; bottom: 0; padding: 22dp 26dp; box-sizing: border-box; overflow-y: auto; }
+#qdetail h2 { font-size: 24dp; font-weight: 800; color: #ffffff; }
+#qdetail .meta { font-size: 13dp; color: #ffb547; font-weight: 800; letter-spacing: 1dp; margin-bottom: 8dp; }
+#qdetail .desc { font-size: 17dp; line-height: 28dp; color: #dbe1ff; margin-top: 16dp; }
+#qdetail .cond { margin-top: 18dp; }
+#qdetail .sec { font-size: 12dp; font-weight: 800; letter-spacing: 1.5dp; color: #8892b6; margin-top: 24dp; }
+#qdetail .dest { margin-top: 10dp; padding: 14dp 16dp; border-radius: 12dp; background-color: rgba(255,209,102,14); border: 1dp rgba(255,209,102,60);
+                 font-size: 16dp; font-weight: 700; color: #ffe39a; }
+#qdetail .dest .i { font-family: lucide; font-size: 16dp; color: #ffb547; margin-right: 10dp; }
+#qdetail .cond div { font-size: 15dp; color: #c9d1f2; padding: 8dp 12dp; margin-bottom: 6dp; border-radius: 10dp; background-color: rgba(255,255,255,8); }
+#qdetail .cond .ok { color: #6ef0a5; }
+.empty { font-size: 15dp; color: #6b7394; padding: 30dp; text-align: center; }
+
+/* system */
+#sys { position: absolute; left: 0; top: 0; width: 520dp; }
+#sysinfo { position: absolute; left: 544dp; right: 0; top: 0; bottom: 0; }
+#sysinfo .card { margin-bottom: 14dp; }
+#sysinfo .row { height: 34dp; line-height: 34dp; font-size: 15dp; color: #dfe5ff; }
+#sysinfo .row .k { display: inline-block; width: 110dp; color: #8892b6; font-weight: 600; }
+#sysinfo .kr { height: 32dp; line-height: 32dp; font-size: 14dp; color: #dfe5ff; }
+#sysinfo .kr .ks { display: inline-block; width: 190dp; }
+#sysinfo .kr .glyph { margin-right: 3dp; vertical-align: middle; }
+#sysinfo .ver { font-size: 12dp; color: #6b7394; margin-top: 6dp; }
+.sysbtn { display: block; position: relative; height: 76dp; margin-bottom: 12dp; border-radius: 16dp; cursor: pointer; background-color: rgba(255,255,255,8); border: 1dp rgba(255,255,255,18);
+          transition: background-color 0.12s cubic-out; }
+.sysbtn:hover, .sysbtn.focus { background-color: rgba(255,255,255,18); border-color: rgba(255,209,102,150); }
+.sysbtn .icon { position: absolute; left: 22dp; top: 22dp; font-size: 26dp; color: #ffd166; }
+.sysbtn .l { position: absolute; left: 70dp; top: 14dp; font-size: 19dp; font-weight: 800; color: #ffffff; }
+.sysbtn .s { position: absolute; left: 70dp; top: 42dp; font-size: 13dp; color: #8892b6; }
+.sysbtn.off { opacity: 0.4; }
+.sysbtn.danger .icon { color: #ff7d93; }
+
+
+/* bag / equipment / skills */
+.chips { position: relative; height: 40dp; width: 552dp; }
+.chips .c { display: inline-block; padding: 7dp 16dp; margin-right: 8dp; border-radius: 10dp; font-size: 14dp; font-weight: 700; color: #aab3d6;
+            background-color: rgba(255,255,255,9); cursor: pointer; }
+.chips .c:hover, .chips .c.focus { background-color: rgba(255,255,255,20); color: #ffffff; }
+.chips .sb { display: inline-block; margin-right: 8dp; vertical-align: 1dp; }
+.chips .sb .glyph { transform: scale(0.85); }
+.chips .c.on { color: #1c0b10; decorator: linear-gradient(to bottom, #ffd59a, #ffad66); }
+.chips .cap { position: absolute; right: 0; top: 8dp; font-size: 14dp; font-weight: 700; color: #aab3d6; }
+.chips .cap.full { color: #ff7d93; }
+.chips .cap .bx { display: inline-block; margin-left: 8dp; width: 24dp; height: 24dp; line-height: 24dp; text-align: center; border-radius: 7dp; font-family: lucide; font-size: 14dp;
+                  color: #1c0b10; decorator: linear-gradient(to bottom, #ffd59a, #ffad66); cursor: pointer; vertical-align: -1dp; }
+/* shop price pill on each product tile */
+.cell .pr { position: absolute; left: 4dp; right: 4dp; bottom: -7dp; height: 16dp; line-height: 16dp; border-radius: 8dp; text-align: center; font-size: 10dp; font-weight: 800; color: #ffd166; background-color: #1a1e36; border: 1dp rgba(255,209,102,90); }
+.cell .pr.free { color: #6ef0a5; border-color: rgba(110,240,165,90); }
+.cell.shop .n { bottom: 12dp; }
+.lgrid.shopg .cell { margin-bottom: 16dp; }
+.chips .note { position: absolute; left: 0; top: 9dp; font-size: 13dp; color: #8892b6; }
+.lgrid { position: absolute; left: 0; top: 52dp; bottom: 0; width: 560dp; overflow-y: auto; }
+.cell { display: inline-block; position: relative; width: 70dp; height: 70dp; margin: 0 8dp 8dp 0; border-radius: 14dp; cursor: pointer;
+        background-color: rgba(255,255,255,8); border: 1dp rgba(255,255,255,18); transition: border-color background-color 0.1s cubic-out; }
+.cell:hover, .cell.focus { border-color: rgba(255,209,102,160); background-color: rgba(255,255,255,16); }
+.cell.sel { border-color: #ffd166; background-color: rgba(255,209,102,28); box-shadow: rgba(255,209,102,70) 0dp 0dp 14dp 0dp; }
+.cell img { position: absolute; left: 11dp; top: 11dp; width: 48dp; height: 48dp; }
+.cell .n { position: absolute; right: 6dp; bottom: 3dp; font-size: 12dp; font-weight: 800; color: #ffffff; font-effect: outline(1dp #000000c0); }
+.cell .hs { position: absolute; left: 5dp; top: 4dp; font-family: lucide; font-size: 11dp; color: #5ad1ff; }
+.cell.bad img { opacity: 0.45; }
+.det { position: absolute; left: 580dp; right: 0; top: 0; bottom: 0; padding: 22dp 24dp; box-sizing: border-box; border-radius: 18dp;
+       background-color: rgba(255,255,255,7); border: 1dp rgba(255,255,255,18); }
+.det .bigic { position: absolute; left: 22dp; top: 22dp; width: 84dp; height: 84dp; border-radius: 18dp; background-color: rgba(255,255,255,10); }
+.det .bigic img { position: absolute; left: 10dp; top: 10dp; width: 64dp; height: 64dp; }
+.det .nm { position: absolute; left: 124dp; top: 26dp; right: 20dp; font-size: 22dp; font-weight: 800; color: #ffffff; }
+.det .ty { position: absolute; left: 124dp; top: 60dp; font-size: 13dp; font-weight: 700; color: #ffb547; }
+.det .props { position: absolute; left: 22dp; right: 22dp; top: 124dp; }
+.det .props div { font-size: 14dp; color: #c9d1f2; padding: 5dp 0; }
+.det .props .k { display: inline-block; width: 90dp; color: #8892b6; font-weight: 600; }
+.det .ds { position: absolute; left: 22dp; right: 22dp; top: 230dp; bottom: 74dp; font-size: 15dp; line-height: 24dp; color: #b9c0dd; overflow-y: auto; }
+.det .skb { position: absolute; left: 22dp; right: 22dp; top: 124dp; bottom: 74dp; overflow-y: auto; }
+.det .skb .props { position: static; }
+.det .skb .ds { position: static; margin-top: 12dp; padding-top: 12dp; border-top: 1dp rgba(255,255,255,18); }
+.det .acts { position: absolute; left: 22dp; right: 22dp; bottom: 18dp; }
+.det .acts .btn { margin-right: 8dp; padding: 10dp 18dp; font-size: 15dp; }
+.det .acts .btn.off { opacity: 0.35; }
+.det .acts .why { margin-left: 4dp; font-size: 13dp; font-weight: 700; color: #ff7d93; }
+.det .none { position: absolute; left: 0; right: 0; top: 45%; text-align: center; font-size: 15dp; color: #6b7394; }
+.eqslots { position: absolute; left: 0; top: 0; bottom: 0; width: 250dp; }
+.eqs { position: relative; height: 66dp; margin-bottom: 8dp; border-radius: 14dp; cursor: pointer; background-color: rgba(255,255,255,8); border: 1dp rgba(255,255,255,18); }
+.eqs:hover, .eqs.focus { border-color: rgba(255,209,102,160); }
+.eqs.sel { border-color: #ffd166; background-color: rgba(255,209,102,24); }
+.eqs img { position: absolute; left: 10dp; top: 9dp; width: 48dp; height: 48dp; }
+.eqs .txt { position: absolute; left: 70dp; top: 11dp; right: 10dp; }
+.eqs .sl { font-size: 11dp; font-weight: 800; letter-spacing: 1dp; color: #ffb547; }
+.eqs .inm { margin-top: 3dp; font-size: 15dp; font-weight: 700; color: #ffffff; white-space: nowrap; }
+.eqs .inm.vacant { color: #6b7394; font-weight: 600; }
+.eqs .ph { position: absolute; left: 10dp; top: 9dp; width: 48dp; height: 48dp; line-height: 48dp; text-align: center; border-radius: 10dp; font-family: lucide; font-size: 20dp; color: #4a5070; background-color: rgba(255,255,255,6); }
+.eqmid { position: absolute; left: 266dp; top: 0; bottom: 0; width: 300dp; overflow-y: auto; }
+.eqmid .h { font-size: 13dp; font-weight: 800; color: #aab3d6; margin-bottom: 10dp; }
+.eqmid .cell { width: 64dp; height: 64dp; }
+.eqmid .cell img { left: 8dp; top: 8dp; width: 48dp; height: 48dp; }
+.delta div { font-size: 14dp; color: #c9d1f2; padding: 4dp 0; }
+.delta .k { display: inline-block; width: 70dp; color: #8892b6; font-weight: 600; }
+.delta .up { color: #6ef0a5; font-weight: 800; }
+.delta .dn { color: #ff7d93; font-weight: 800; }
+.sklist { position: absolute; left: 0; top: 52dp; bottom: 0; width: 560dp; overflow-y: auto; }
+.sk { position: relative; height: 70dp; margin-bottom: 8dp; border-radius: 14dp; cursor: pointer; background-color: rgba(255,255,255,8); border: 1dp rgba(255,255,255,18); }
+.sk:hover, .sk.focus { border-color: rgba(255,209,102,160); }
+.sk.sel { border-color: #ffd166; background-color: rgba(255,209,102,22); }
+.sk img { position: absolute; left: 11dp; top: 11dp; width: 48dp; height: 48dp; }
+.sk.locked img { opacity: 0.35; }
+.sk .nm { position: absolute; left: 72dp; top: 12dp; font-size: 16dp; font-weight: 800; color: #ffffff; }
+.sk .rk { position: absolute; left: 72dp; top: 40dp; }
+.sk .rk span { display: inline-block; width: 14dp; height: 6dp; margin-right: 3dp; border-radius: 3dp; background-color: rgba(255,255,255,22); }
+.sk .rk span.on { background-color: #ffd166; }
+.sk .req { position: absolute; right: 14dp; top: 14dp; font-size: 12dp; font-weight: 700; color: #8892b6; text-align: right; }
+.sk .req .up { display: block; margin-top: 6dp; color: #6ef0a5; }
+#picker { position: absolute; left: 0; top: 0; right: 0; bottom: 0; display: none; background-color: #03040ad0; }
+#picker.on { display: block; }
+#picker .box { position: absolute; left: 50%; top: 50%; width: 576dp; margin-left: -288dp; margin-top: -170dp; padding: 26dp 28dp; box-sizing: border-box; }
+#picker .t { font-size: 21dp; font-weight: 800; color: #ffffff; }
+#picker .d { font-size: 14dp; color: #9aa3c2; margin: 6dp 0 16dp 0; }
+#picker .row { margin-bottom: 10dp; }
+#picker .row .pg { display: inline-block; width: 36dp; font-size: 16dp; font-weight: 800; color: #ffb547; vertical-align: top; line-height: 70dp; }
+#picker .cell .k { position: absolute; left: 50%; top: -9dp; margin-left: -11dp; }
+#picker .cell .ph { display: block; text-align: center; line-height: 70dp; font-family: lucide; font-size: 20dp; color: #4a5277; }
+#picker .cell.vacant { background-color: rgba(255,255,255,4); }
+#picker .row { margin-top: 12dp; }
+/* title list (cFormCharTitle, form 0x10) */
+#titles { position: absolute; left: 0; top: 0; right: 0; bottom: 0; display: none; background-color: #03040ad0; }
+#titles.on { display: block; }
+#titles .box { position: absolute; left: 50%; top: 50%; width: 760dp; height: 440dp; margin-left: -380dp; margin-top: -220dp; padding: 24dp 26dp; box-sizing: border-box; }
+#titles .t { font-size: 21dp; font-weight: 800; color: #ffffff; }
+#ttl_list { position: absolute; left: 26dp; top: 66dp; width: 330dp; bottom: 24dp; overflow-y: auto; }
+#ttl_list .tr { display: block; height: 40dp; line-height: 40dp; padding: 0 12dp; margin-bottom: 4dp; border-radius: 8dp; font-size: 15dp; color: #cfd5ee; background-color: rgba(255,255,255,6); }
+#ttl_list .tr .icon { display: inline-block; width: 22dp; font-size: 14dp; color: #4a5277; }
+#ttl_list .tr.learned .icon { color: #8892b6; }
+#ttl_list .tr.on .icon { color: #ffd166; }
+#ttl_list .tr.on { color: #ffd166; }
+#ttl_list .tr.locked { color: #5a6284; }
+#ttl_list .tr.sel { background-color: rgba(255,181,71,40); border: 1dp #ffb54780; }
+#ttl_list .tr .bd { float: right; font-size: 12dp; font-weight: 700; color: #ffb547; }
+#ttl_det { position: absolute; left: 376dp; right: 26dp; top: 66dp; bottom: 80dp; overflow-y: auto; }
+#ttl_det .nm { font-size: 19dp; font-weight: 800; color: #ffffff; margin-bottom: 12dp; }
+#ttl_det .ds { font-size: 15dp; line-height: 24dp; color: #b9c0dd; }
+#ttl_btns { position: absolute; right: 26dp; bottom: 24dp; }
+#ttl_btns .btn { margin-left: 10dp; }
+
+/* confirm + toast */
+#confirm { position: absolute; left: 0; top: 0; right: 0; bottom: 0; display: none; background-color: #03040ad0; }
+#confirm.on { display: block; }
+#confirm .box { position: absolute; left: 50%; top: 50%; width: 540dp; margin-left: -270dp; margin-top: -110dp; padding: 28dp 30dp 22dp 30dp; text-align: center; box-sizing: border-box; }
+#confirm .t { font-size: 22dp; font-weight: 800; color: #ffffff; }
+#confirm .d { font-size: 16dp; color: #b9c0dd; margin-top: 10dp; margin-bottom: 22dp; line-height: 26dp; }
+#confirm .d img { width: 56dp; height: 56dp; display: block; margin: 0 auto 8dp auto; }
+#confirm .d .after { color: #8892b6; font-size: 13dp; }
+#confirm .btn { margin: 0 6dp; min-width: 150dp; }
+#mtoast { position: absolute; left: 50%; top: 40dp; width: 448dp; margin-left: -224dp; text-align: center; padding: 14dp; box-sizing: border-box; font-size: 16dp; font-weight: 700; display: none; }
+#mtoast.on { display: block; animation: 0.2s cubic-out 1 toastup; }
+@keyframes toastup { from { transform: translateY(14dp); opacity: 0; } to { transform: translateY(0dp); opacity: 1; } }
+</style>
+</head>
+<body data-block="1" data-model="menu" data-class-touch="touch">
+<div id="scrim"/>
+<div id="rail" class="glass">
+  <span class="bump" id="bumpl" data-rml="bumpl"></span>
+  <div class="tab" id="tab0" data-act="tab0" data-class-sel="tab == 0"><span class="icon">&#xe46c;</span><span class="t">캐릭터</span><span class="dot" id="dot0" data-class-on="dot0"></span></div>
+  <div class="tab" id="tab1" data-act="tab1" data-class-sel="tab == 1"><span class="icon">&#xe2c8;</span><span class="t">가방</span></div>
+  <div class="tab" id="tab2" data-act="tab2" data-class-sel="tab == 2"><span class="icon">&#xe1ca;</span><span class="t">장비</span></div>
+  <div class="tab" id="tab3" data-act="tab3" data-class-sel="tab == 3"><span class="icon">&#xe416;</span><span class="t">스킬</span><span class="dot" id="dot3" data-class-on="dot3"></span></div>
+  <div class="tab" id="tab4" data-act="tab4" data-class-sel="tab == 4"><span class="icon">&#xe2ed;</span><span class="t">퀘스트</span></div>
+  <div class="tab" id="tab6" data-act="tab6" data-class-sel="tab == 6"><span class="icon">&#xe3e8;</span><span class="t">상점</span></div>
+  <div class="tab" id="tab8" data-act="tab8" data-class-sel="tab == 8"><span class="icon">&#xe154;</span><span class="t">시스템</span></div>
+  <span class="bump" id="bumpr" data-rml="bumpr"></span>
+</div>
+<div id="main" class="glass-strong blur">
+  <div id="top"><h1 id="ptitle">{{ptitle}}</h1><div class="sub" id="psub"></div>
+    <div id="topright"><span class="chip"><span class="icon">&#xe097;</span><span id="gold">{{gold}}</span></span><span id="closebtn" data-act="close" data-nonav="1">&#xe1b2;</span></div>
+  </div>
+
+  <div class="page" id="p0" data-class-on="tab == 0">
+    <div id="cv"><div class="glow"/><img id="cvimg" src="" data-attr-src="face"/><div class="pfade"/><div id="cvname" data-rml="cvname"></div><div id="cvtitle" data-act="ttl"><span data-rml="cvtitle"></span><span class="icon">&#xe1f9;</span></div>
+      <div id="cvlv"><span class="lv" id="cvlvt">{{cvlvt}}</span><span class="xpt" id="cvxp">{{cvxp}}</span><div class="bar xp" id="cvbar"><div class="fill" data-style-width="xpw"></div></div></div></div>
+    <div id="stats">
+      <div class="card"><h2>기본 능력치<span class="r" id="gpleft">{{gpleft}}</span></h2>
+        <div class="statline"><span class="k"><span class="icon">&#xe2b3;</span>힘</span><span class="v" id="st0">{{st0}}</span><span class="p" id="sp0">{{sp0}}</span><span class="plus" id="pl0" data-act="gp0" data-class-on="gp_on">&#xe13d;</span></div>
+        <div class="statline"><span class="k"><span class="icon">&#xe3bd;</span>민첩</span><span class="v" id="st1">{{st1}}</span><span class="p" id="sp1">{{sp1}}</span><span class="plus" id="pl1" data-act="gp1" data-class-on="gp_on">&#xe13d;</span></div>
+        <div class="statline"><span class="k"><span class="icon">&#xe35b;</span>지능</span><span class="v" id="st2">{{st2}}</span><span class="p" id="sp2">{{sp2}}</span><span class="plus" id="pl2" data-act="gp2" data-class-on="gp_on">&#xe13d;</span></div>
+      </div>
+      <div class="card"><h2>전투 능력치</h2><div class="grid2" id="sec"><div class="cell2"><span class="k">HP</span><span class="v">{{sec0}}</span></div><div class="cell2"><span class="k">MP</span><span class="v">{{sec1}}</span></div><div class="cell2"><span class="k">공격</span><span class="v">{{sec2}}</span></div><div class="cell2"><span class="k">방어</span><span class="v">{{sec3}}</span></div><div class="cell2"><span class="k">명중</span><span class="v">{{sec4}}</span></div><div class="cell2"><span class="k">회피</span><span class="v">{{sec5}}</span></div><div class="cell2"><span class="k">치명</span><span class="v">{{sec6}}</span></div></div></div>
+    </div>
+  </div>
+  <div class="page" id="p1" data-class-on="tab == 1">
+    <div class="chips" id="invcats"><span class="sb" data-if="gl != ''" data-rml="gl"></span><span class="c" data-class-on="inv_cat == 0" data-act="cat0">전체</span><span class="c" data-class-on="inv_cat == 1" data-act="cat1">장비</span><span class="c" data-class-on="inv_cat == 2" data-act="cat2">소비</span><span class="c" data-class-on="inv_cat == 3" data-act="cat3">재료</span><span class="c" data-class-on="inv_cat == 4" data-act="cat4">기타</span><span class="sb" data-if="gr != ''" data-rml="gr"></span><span class="cap" data-class-full="inv_full">{{inv_used}} / {{inv_cap}}<span class="bx" data-act="bag_expand" data-nonav="1">&#xe13d;</span></span></div>
+    <div class="lgrid" id="invgrid"><div class="cell" data-for="c : items" data-class-sel="c.sel" data-attr-data-act="c.act"><img data-attr-src="c.src"/><span class="n" data-if="c.n != ''">{{c.n}}</span><span class="hs" data-if="c.hs">&#xe1b4;</span></div><div class="empty" data-if="items.size == 0">비어 있습니다</div></div>
+    <div class="det" id="invdet" data-rml="invdet"></div>
+  </div>
+  <div class="page" id="p2" data-class-on="tab == 2">
+    <div class="eqslots" id="eqslots"><div class="eqs" data-for="e : eqslots" data-class-sel="e.sel" data-attr-data-act="e.act"><img data-if="e.has" data-attr-src="e.src"/><div class="ph" data-if="!e.has" data-rml="e.ph"></div><div class="txt"><div class="sl">{{e.sl}}</div><div class="inm" data-class-vacant="!e.has" data-rml="e.nm"></div></div></div></div>
+    <div class="eqmid"><div class="h" id="eqhead" data-rml="eqhead"></div><div id="eqcands"><div class="cell" data-for="c : cands" data-class-sel="c.sel" data-class-bad="c.bad" data-attr-data-act="c.act"><img data-attr-src="c.src"/></div><div class="empty" data-if="cands.size == 0">교체할 장비가 없습니다</div></div></div>
+    <div class="det" id="eqdet" style="left: 586dp;" data-rml="eqdet"></div>
+  </div>
+  <div class="page" id="p3" data-class-on="tab == 3">
+    <div class="chips" id="sktabs"><span class="sb" data-if="gl != ''" data-rml="gl"></span><span class="c" data-class-on="sk_tab == 0" data-act="skt0">액티브</span><span class="c" data-class-on="sk_tab == 1" data-act="skt1">패시브</span><span class="c" data-class-on="sk_tab == 2" data-act="skt2">생활</span><span class="sb" data-if="gr != ''" data-rml="gr"></span><span class="cap">SP {{sp}}</span></div>
+    <div class="sklist" id="sklist"><div class="sk" data-for="r : skills" data-class-sel="r.sel" data-class-locked="r.locked" data-attr-data-act="r.act"><img data-attr-src="r.src"/><span class="nm" data-rml="r.nm"></span><span class="rk" data-rml="r.rk"></span><span class="req" data-rml="r.req"></span></div><div class="sk" data-for="l : life"><img data-attr-src="l.src"/><span class="nm" data-rml="l.nm"></span><span class="rk" style="width: 300dp;"><span class="on" data-style-width="l.w"></span></span><span class="req">{{l.req}}</span></div><div class="empty" data-if="sk_empty">스킬이 없습니다</div></div><div class="lfade" style="left: 0; width: 548dp; bottom: 0;"/>
+    <div class="det" id="skdet" data-rml="skdet"></div>
+  </div>
+  <div class="page" id="p4" data-class-on="tab == 4"><div id="qlist"><div class="q" data-for="q : quests" data-class-sel="q.sel" data-attr-data-act="q.act"><div class="kind" data-class-sub="q.sub">{{q.kind}}</div><div class="nm" data-rml="q.nm"></div><span class="st" data-class-done="q.done">{{q.st}}</span></div><div class="empty" data-if="quests.size == 0">진행 중인 퀘스트가 없습니다</div></div><div id="qsum"><div class="h">진행 현황</div><div class="g"><div class="c"><div class="v">{{q_main}}</div><div class="k">메인</div></div><div class="c"><div class="v">{{q_sub}}</div><div class="k">서브</div></div><div class="c ok"><div class="v">{{q_ready}}</div><div class="k">완료 가능</div></div></div></div><div id="qdetail" class="card" data-rml="qdetail"></div></div>
+  <div class="page" id="p6" data-class-on="tab == 6">
+    <div class="chips" id="shophead"><span class="note">골드로 구매할 수 있는 특별 상품</span></div>
+    <div class="lgrid shopg" id="shopgrid"><div class="cell shop" data-for="c : shop" data-class-sel="c.sel" data-attr-data-act="c.act"><img data-attr-src="c.src"/><span class="n" data-if="c.n != ''">{{c.n}}</span><span class="pr" data-class-free="c.free">{{c.pr}}</span></div><div class="empty" data-if="shop.size == 0">상품을 불러오는 중</div></div><div class="lfade" style="left: 0; width: 548dp; bottom: 0;"/>
+    <div class="det" id="shopdet" data-rml="shopdet"></div>
+  </div>
+  <div class="page" id="p8" data-class-on="tab == 8">
+    <div id="sysinfo" data-rml="sysinfo"></div>
+    <div id="sys">
+      <div class="sysbtn" id="sy_save" data-act="sys_save" data-class-off="!can_save"><span class="icon">&#xe14d;</span><span class="l">저장하기</span><span class="s" id="sy_save_s">현재 진행 상황을 슬롯에 기록합니다</span></div>
+      <div class="sysbtn" id="sy_help" data-act="sys_help"><span class="icon">&#xe082;</span><span class="l">도움말</span><span class="s">게임 안내 · 구조 요청(끼임 탈출)</span></div>
+      <div class="sysbtn" id="sy_opt" data-act="sys_opt"><span class="icon">&#xe154;</span><span class="l">설정</span><span class="s">사운드 · 게임 속도 · 화면</span></div>
+      <div class="sysbtn danger" id="sy_title" data-act="sys_title"><span class="icon">&#xe10e;</span><span class="l">타이틀로</span><span class="s">저장하지 않은 진행은 사라집니다</span></div>
+    </div>
+  </div>
+  <div id="foot" data-rml="foot"></div>
+</div>
+<div id="confirm" data-class-on="confirm"><div class="box glass-strong" style="background-color: #0d1022; backdrop-filter: none;">
+  <div class="t" id="c_t">{{c_t}}</div><div class="d" id="c_d" data-rml="c_d"></div>
+  <div><span class="btn" id="c_no" data-act="c_no">취소</span><span class="btn primary" id="c_yes" data-act="c_yes">확인</span></div>
+</div></div>
+<div id="picker" data-class-on="picker"><div class="box glass-strong" style="background-color: #0d1022; backdrop-filter: none;">
+  <div class="t">단축키 등록</div><div class="d" id="pk_d">등록할 슬롯을 고르세요. A/B 두 페이지를 전환하며 사용할 수 있습니다.</div>
+  <div id="pk_rows"><div class="row" data-for="r : pk_rows"><span class="pg">{{r.pg}}</span><div class="cell" data-for="c : r.cells" data-class-vacant="!c.has" data-attr-data-act="c.act"><img data-if="c.has" data-attr-src="c.src"/><span class="ph" data-if="!c.has">&#xe13d;</span><span class="k" data-rml="c.k"></span></div></div></div>
+  <div style="text-align: right; margin-top: 10dp;"><span class="btn" data-act="pk_close">닫기</span></div>
+</div></div>
+<div id="titles" data-class-on="ttl"><div class="box glass-strong" style="background-color: #0d1022; backdrop-filter: none;">
+  <div class="t">호칭 변경</div>
+  <div id="ttl_list"><div class="tr" data-for="r : ttl_rows" data-attr-data-act="r.act" data-class-sel="r.sel" data-class-on="r.on" data-class-learned="r.learned" data-class-locked="r.locked"><span class="icon" data-if="r.locked">&#xe10b;</span><span class="icon" data-if="!r.locked">&#xe04f;</span><span data-rml="r.nm"></span><span class="bd" data-if="r.on">사용 중</span></div></div>
+  <div id="ttl_det" data-rml="ttl_det"></div>
+  <div id="ttl_btns"><span class="btn primary" id="tt_eq" data-act="tt_eq">{{l_eq}}</span><span class="btn" id="tt_info" data-act="tt_info">{{l_in}}</span><span class="btn" data-act="tt_close">닫기</span></div>
+</div></div>
+<div id="mtoast" class="glass-strong" data-class-on="toast_on">{{toast}}</div>
+</body>
+</rml>

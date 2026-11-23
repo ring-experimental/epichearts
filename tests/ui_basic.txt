@@ -1,0 +1,15 @@
+# basic UI flow from a loaded save: title, save list, field, bag
+wait 10000
+snap title
+tap 256 168      # Game Start
+wait 2500
+snap saves
+tap 256 120      # first save slot
+wait 9000
+snap field_popup
+tap 256 160      # dismiss mission popup
+wait 2000
+snap field
+tap 19 20        # bag (top-left)
+wait 2000
+snap bag

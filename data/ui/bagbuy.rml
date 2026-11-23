@@ -1,0 +1,17 @@
+<rml>
+<head>
+<title>bagbuy</title>
+<link type="text/rcss" href="theme.rcss"/>
+<link type="text/rcss" href="dialog.rcss"/>
+</head>
+<body data-block="1" data-model="bagbuy">
+<div id="scrim"/>
+<div id="wrap"><div id="box" class="glass-strong blur">
+  <div id="kicker">가방 확장</div>
+  <div id="title">{{title}}</div>
+  <div id="body" data-rml="body"></div>
+  <div id="btns"><span class="btn" data-if="ask" data-act="bb_close">취소</span><span class="btn primary" data-if="!ask" data-act="bb_close">{{close}}</span><span class="btn primary" data-if="ask" data-class-off="!afford" data-act="bb_buy">확장하기</span></div>
+  <div id="hint"></div>
+</div></div>
+</body>
+</rml>

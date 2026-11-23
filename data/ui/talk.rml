@@ -1,0 +1,183 @@
+<rml>
+<head>
+<title>talk</title>
+<link type="text/rcss" href="theme.rcss"/>
+<style>
+body { pointer-events: none; }
+
+/* ---- dialogue ---- */
+#talk {
+    position: absolute; left: 50%; bottom: 34dp; width: 860dp; margin-left: -430dp;
+    min-height: 150dp; display: none;
+    opacity: 0; transform: translateY(16dp);
+    transition: opacity transform 0.18s cubic-out;
+}
+#talk.on { display: block; opacity: 1; transform: translateY(0dp); }
+#talk.hit { pointer-events: auto; cursor: pointer; }
+#tpanel { position: relative; padding: 26dp 34dp 24dp 34dp; min-height: 150dp; box-sizing: border-box; }
+#tface { position: absolute; left: 14dp; bottom: 0; width: 180dp; height: 260dp; display: none; }
+#talk.face #tface { display: block; }
+#tface img { position: absolute; left: 0; bottom: 0; }
+#tname {
+    position: absolute; left: 30dp; top: -18dp;
+    padding: 6dp 16dp; border-radius: 10dp;
+    font-size: 15dp; font-weight: 800; letter-spacing: 0.5dp; color: #1c1206;
+    decorator: linear-gradient(to bottom, #ffe39a, #ffb547);
+    box-shadow: rgba(0,0,0,140) 0dp 4dp 12dp 0dp;
+}
+#tname.none { display: none; }
+#ttitle { font-size: 19dp; font-weight: 800; color: #ffd166; margin-bottom: 8dp; display: none; }
+#ttitle.on { display: block; }
+#ttext { font-size: 21dp; font-weight: 500; line-height: 34dp; color: #f3f5ff; }
+#tnext {
+    position: absolute; right: 22dp; bottom: 14dp;
+    font-size: 13dp; font-weight: 700; color: #aab3d6;
+    opacity: 0; transition: opacity 0.2s linear-in-out;
+}
+#tnext.on { opacity: 1; animation: 1.1s cubic-in-out infinite alternate bob; }
+#tnext .icon { color: #ffd166; margin-left: 4dp; font-size: 14dp; }
+@keyframes bob { from { transform: translateY(0dp); } to { transform: translateY(-4dp); } }
+
+/* centred notice (mission / guide): centred on both axes by its wrapper */
+#nwrap { position: absolute; left: 0; top: 0; right: 0; bottom: 0; display: flex; justify-content: center; align-items: center; pointer-events: none; }
+#notice {
+    position: relative; width: 700dp; box-sizing: border-box;
+    padding: 30dp 40dp 28dp 40dp; text-align: center; display: none;
+    opacity: 0; transform: scale(0.96);
+    transition: opacity transform 0.2s cubic-out;
+}
+#notice.on { display: block; opacity: 1; transform: scale(1); pointer-events: auto; cursor: pointer; }
+#notice .kicker { font-size: 13dp; font-weight: 800; letter-spacing: 2dp; color: #ffb547; }
+#ntitle { font-size: 26dp; font-weight: 800; color: #ffffff; margin-top: 6dp; }
+#nsep { height: 2dp; width: 64dp; margin: 16dp auto 16dp auto; border-radius: 1dp; decorator: linear-gradient(to right, #ff5c7a, #ffb547); }
+#ntext { font-size: 19dp; line-height: 30dp; color: #dbe1ff; }
+#nfoot { margin-top: 20dp; font-size: 13dp; color: #8d96ba; font-weight: 600; }
+
+/* ---- area banner ---- */
+#banner {
+    position: absolute; left: 0; right: 0; top: 100dp; text-align: center; display: none; padding: 12dp 0 14dp 0;
+    decorator: linear-gradient(to right, #05060c00, #05060c9a 30%, #05060c9a 70%, #05060c00); /* backing over bright scenes */
+    opacity: 0; transition: opacity 0.35s cubic-out;
+}
+#banner.on { display: block; opacity: 1; }
+#banner .rule { display: inline-block; width: 120dp; height: 1dp; margin: 0 18dp; vertical-align: middle; decorator: linear-gradient(to right, #ffffff00, #ffd166); }
+#banner .rule.r { decorator: linear-gradient(to right, #ffd166, #ffffff00); }
+#bannerkick { display: none; }
+/* chapter title card: centred over the intro, with a soft glow instead of a bare black frame */
+#banner.chapter { top: 0; bottom: 0; padding: 0; decorator: radial-gradient(circle at 50% 50%, #2a2350c0, #05060c00 60%); }
+#banner.chapter #bwrap { position: absolute; left: 0; right: 0; top: 50%; margin-top: -56dp; }
+#banner.chapter #bannerkick { display: block; font-size: 13dp; font-weight: 800; letter-spacing: 6dp; color: #ffb547; margin-bottom: 12dp; }
+#banner.chapter #bannertext { font-size: 52dp; letter-spacing: 6dp; }
+#banner.chapter .rule { width: 160dp; }
+#bannertext { display: inline-block; vertical-align: middle; font-size: 30dp; font-weight: 800; letter-spacing: 2dp; color: #fff8e6; font-effect: shadow(0dp 3dp #000000c0); }
+
+/* ---- toasts (right) ---- */
+#toasts { position: absolute; right: 20dp; top: 210dp; width: 360dp; }
+.toast {
+    display: block; margin-bottom: 8dp; padding: 10dp 16dp 10dp 14dp;
+    font-size: 15dp; font-weight: 600; color: #f3f5ff;
+    border-left: 3dp #6ef0a5;
+    animation: 0.25s cubic-out 1 toastin;
+}
+.toast .ti { font-family: lucide; font-size: 15dp; color: #6ef0a5; margin-right: 10dp; }
+.toast.warn .ti { color: #ff7d93; }
+.toast.warn { border-left-color: #ff5c7a; }
+.toast.chapter { border-left-color: #ffd166; font-size: 18dp; font-weight: 800; }
+@keyframes toastin { from { transform: translateX(40dp); opacity: 0; } to { transform: translateX(0dp); opacity: 1; } }
+
+/* ---- script captions (sound effects / narration) at the original's position ---- */
+#captions { position: absolute; left: 0; top: 0; right: 0; bottom: 0; pointer-events: none; }
+.cap { position: absolute; display: flex; align-items: center; }
+.cap .cb { display: inline-block; font-size: 22dp; font-weight: 800; line-height: 32dp; font-effect: outline(2dp #05060ccc); }
+/* frameless captions keep a feathered dark backing so they read over busy sprites */
+.cap:not(.framed):not(.sfx) .cb { padding: 6dp 28dp; decorator: radial-gradient(ellipse, #05060c70, #05060c00 75%); }
+.cap { justify-content: center; }
+.cap.framed .cb { padding: 8dp 28dp; border-radius: 14dp; background-color: rgba(8,10,22,200); border: 1dp rgba(255,255,255,30); font-effect: none; }
+.cap.sfx .cb { font-size: 42dp; line-height: 50dp; letter-spacing: 1.5dp; font-effect: outline(2.5dp #05060cdd); animation: 0.22s back-out 1 sfxpop; }
+@keyframes sfxpop { from { transform: scale(0.6); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+/* the wait marker sits in the box's corner, out of the text flow: it comes and goes without moving a centred line */
+.cap .cb { position: relative; }
+.cap .wait { position: absolute; right: 7dp; bottom: 3dp; font-family: lucide; font-size: 15dp; line-height: 16dp; color: #ffd166; font-effect: none; }
+.cap.sfx .wait { right: -22dp; bottom: 6dp; }
+/* talk balloons that do not wait (several speakers at once): bubble over the speaker, tail towards the speaker */
+.bal { position: absolute; width: 340dp; }
+.bal .bb { display: inline-block; max-width: 320dp; padding: 7dp 14dp 8dp 14dp; border-radius: 12dp; text-align: left;
+           background-color: rgba(8,10,22,215); border: 1dp rgba(255,255,255,40); font-size: 15dp; line-height: 21dp; font-weight: 700; color: #ffffff; }
+.bal .bn { font-size: 12dp; line-height: 16dp; font-weight: 800; color: #e1b96c; }
+.bal .bt { display: block; position: relative; width: 10dp; height: 10dp; margin-top: -6dp; transform: rotate(45deg);
+           background-color: rgba(8,10,22,215); border-right: 1dp rgba(255,255,255,40); border-bottom: 1dp rgba(255,255,255,40); }
+.bal.below .bt { position: absolute; top: -4dp; margin-top: 0; border-width: 1dp 0 0 1dp; border-color: rgba(255,255,255,40); }
+.ticker { position: absolute; left: 0; right: 0; bottom: 124dp; text-align: center; }
+.ticker .tk { display: inline-block; padding: 10dp 22dp; border-radius: 999dp; font-size: 17dp; font-weight: 700;
+              background-color: rgba(8,10,22,215); border: 1dp rgba(255,209,102,90); animation: 0.25s cubic-out 1 tkin; }
+.ticker .ti { font-family: lucide; font-size: 16dp; color: #ffd166; margin-right: 10dp; }
+@keyframes tkin { from { transform: translateY(12dp); opacity: 0; } to { transform: translateY(0dp); opacity: 1; } }
+.toast.quest { border-left-color: #ffb547; }
+.toast.quest .ti { color: #ffb547; }
+#countdown { position: absolute; left: 50%; top: 20dp; margin-left: -60dp; width: 120dp; text-align: center; display: none; padding: 6dp 0; font-size: 22dp; font-weight: 800; color: #ffd166; }
+#countdown.on { display: block; }
+
+/* ---- drill minigame (cMbMinigame): notes slide along the original's band into the target ---- */
+#drill { position: absolute; left: 0; top: 0; right: 0; bottom: 0; display: none; }
+#drill.on { display: block; }
+#dband { position: absolute; height: 64dp; margin-top: -32dp;
+         decorator: linear-gradient(to right, #05060c00, #05060cb0 18%, #05060cb0 82%, #05060c00); }
+#dband .rail { position: absolute; left: 6%; right: 6%; top: 31dp; height: 2dp; decorator: linear-gradient(to right, #ffd16600, #ffd16670 30%, #ffd16670 70%, #ffd16600); }
+#dring { position: absolute; width: 58dp; height: 58dp; margin-left: -29dp; margin-top: -29dp; border-radius: 29dp;
+         border: 3dp #ffd166; background-color: rgba(255,209,102,30); }
+#drill.good #dring { border-color: #6ef0a5; background-color: rgba(110,240,165,70); animation: 0.18s back-out 1 dpop; }
+#drill.fail #dring { border-color: #ff5c7a; background-color: rgba(255,92,122,60); }
+@keyframes dpop { from { transform: scale(1.3); } to { transform: scale(1); } }
+.dn { position: absolute; width: 44dp; height: 44dp; margin-left: -22dp; margin-top: -22dp; border-radius: 22dp;
+      background-color: rgba(18,22,40,235); border: 2dp rgba(255,255,255,90);
+      text-align: center; font-size: 22dp; line-height: 40dp; font-weight: 800; color: #ffffff; }
+.dn.atk { font-family: lucide; font-size: 20dp; color: #ffb547; }
+.dn.live { border-color: #ffd166; background-color: rgba(70,52,12,240); transform: scale(1.15); }
+.dn.hit { border-color: #6ef0a5; color: #6ef0a5; }
+#dfx { position: absolute; width: 240dp; margin-left: -120dp; text-align: center; font-size: 26dp; font-weight: 800;
+       letter-spacing: 2dp; font-effect: outline(2dp #05060ccc); }
+#drill.good #dfx { color: #6ef0a5; }
+#drill.fail #dfx { color: #ff5c7a; animation: 0.22s back-out 1 dpop; }
+#dpips { position: absolute; width: 240dp; margin-left: -120dp; text-align: center; }
+#dpips span { display: inline-block; width: 10dp; height: 10dp; margin: 0 4dp; border-radius: 5dp; background-color: rgba(255,255,255,70); }
+#dpips span.on { background-color: #6ef0a5; }
+
+/* ---- gathering / fishing gauge (cCollectGaugeWnd) over the gatherer ---- */
+#gather { position: absolute; width: 230dp; margin-left: -115dp; display: none; padding: 9dp 14dp 11dp 12dp; }
+#gather.on { display: block; }
+#gicon { position: absolute; left: 12dp; top: 9dp; width: 40dp; height: 40dp; border-radius: 10dp; background-color: rgba(255,255,255,18); }
+#gicon img { width: 40dp; height: 40dp; }
+#gbody { margin-left: 52dp; }
+#gname { font-size: 15dp; font-weight: 800; color: #ffffff; white-space: nowrap; overflow: hidden; }
+#gbar { position: relative; height: 8dp; margin-top: 7dp; border-radius: 4dp; background-color: rgba(255,255,255,30); }
+#gfill { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 4dp; decorator: linear-gradient(to right, #4fd38b, #9dffb8); }
+#gpct { position: absolute; right: 14dp; top: 10dp; font-size: 12dp; font-weight: 700; color: #9dffb8; }
+
+#fade { position: absolute; left: 0; top: 0; right: 0; bottom: 0; background-color: #000000; opacity: 0; }
+</style>
+</head>
+<body>
+  <div id="banner"><div id="bwrap"><div id="bannerkick"></div><span class="rule"/><span id="bannertext"></span><span class="rule r"/></div></div>
+  <div id="countdown" class="glass"></div>
+  <div id="gather" class="glass"><div id="gicon"><img id="gimg" src=""/></div><div id="gpct"></div><div id="gbody"><div id="gname"></div><div id="gbar"><div id="gfill"></div></div></div></div>
+  <div id="drill"><div id="dband"><div class="rail"></div></div><div id="dring"></div><div id="dnotes"></div><div id="dfx"></div><div id="dpips"></div></div>
+  <div id="captions"></div>
+  <div id="toasts"></div>
+  <div id="talk" data-act="advance">
+    <div id="tpanel" class="glass-strong blur">
+      <div id="tname"></div>
+      <div id="ttitle"></div>
+      <div id="ttext"></div>
+      <div id="tnext"><span id="tnextlabel"></span><span class="icon">&#xe06d;</span></div>
+    </div>
+    <div id="tface"><img id="tfaceimg" src=""/></div>
+  </div>
+  <div id="nwrap"><div id="notice" class="glass-strong blur" data-act="advance">
+    <div class="kicker" id="nkicker"></div>
+    <div id="ntitle"></div>
+    <div id="nsep"></div>
+    <div id="ntext"></div>
+    <div id="nfoot"></div>
+  </div></div>
+</body>
+</rml>

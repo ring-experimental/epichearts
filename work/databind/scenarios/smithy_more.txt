@@ -1,0 +1,122 @@
+# save: lv14
+# smithy paths the town scenario does not take (data-binding batch 4). Town smith (script 210): i0 수리 2/0, i1 제련 1,
+# i2 강화 0, i3 복구 2/1; alchemist (script 211): i0 녹이기 3, i1 스캔 4, i2 강화석 제거 5 (cflScript::MakeUIWnd
+# @000e16cc, op 0x99 operand 0x50b). Each mode is reopened from fn2 / fn3 (closing goes back to the town).
+# - refine (mode 1): 5 refine stones (8/0) and 3 + 3 luck scrolls (8/0x17, 8/0x1a: the two kinds doScrollAction
+#   @001189f8 adds); equipment l0, scroll add0 / rmsc / add1 / sc1 / add0, do -> popup rask -> ryes -> progress ->
+#   rdone -> rok; then the same once more with rno; the result is the original's roll (two baselines compared)
+# - enchant (mode 0): pick0 -> l0 -> the original's notice (no socket / already enchanted: no equipment of the lv14 save
+#   has a socket) -> b0. The stone slot pick1 is not taken: it needs equipment in slot 0, and pressed while slot 0 is
+#   empty ShowCommonTv @001185d0 reads the slot 0 item (crash, c0000005)
+# - remove gems (mode 5): the picker of filter 0x15
+@prefix
+ui dev additem 8 0 5 0
+ui dev additem 8 23 3 0
+ui dev additem 8 26 3 0
+wait 500
+ui act town
+wait 1500
+ui act fn2
+wait 2000
+ui act i1
+wait 2500
+dump smithy__ref_open
+ui key Down
+wait 300
+dump smithy__ref_nav
+ui act l0
+wait 1000
+dump smithy__ref_l0
+ui act add0
+wait 500
+dump smithy__ref_add0
+ui act rmsc
+wait 500
+dump smithy__ref_rmsc
+ui act add1
+wait 500
+dump smithy__ref_add1
+ui act sc1
+wait 500
+dump smithy__ref_sc1
+ui act add0
+wait 500
+dump smithy__ref_sc1_add0
+ui act do
+wait 1000
+dump smithy__ref_ask
+ui key Left
+wait 300
+dump smithy__ref_ask_left
+ui act ryes
+wait 300
+dump smithy__ref_prog
+wait 4000
+dump smithy__ref_done
+ui act rok
+wait 1000
+dump smithy__ref_ok
+ui act do
+wait 1000
+dump smithy__ref_ask2
+ui act rno
+wait 1000
+dump smithy__ref_no
+ui act pick0
+wait 1000
+dump smithy__ref_pick0
+ui act close
+wait 2000
+dump smithy__ref_closed
+ui act fn2
+wait 2000
+ui act i1
+wait 2500
+dump smithy__ref_reopen
+ui act close
+wait 2000
+ui act fn2
+wait 2000
+ui act i2
+wait 2500
+dump smithy__enc_open
+ui act pick0
+wait 1000
+dump smithy__enc_pick0
+ui key Down
+wait 300
+dump smithy__enc_pick0_nav
+ui act l0
+wait 1000
+dump dialogs__enc_nosocket
+ui act b0
+wait 1000
+dump smithy__enc_l0
+ui act close
+wait 2000
+dump smithy__enc_closed
+ui act fn2
+wait 2000
+ui act i2
+wait 2500
+dump smithy__enc_reopen
+ui act close
+wait 2000
+ui act fn3
+wait 2000
+ui act i2
+wait 2500
+dump smithy__gem_open
+ui act pick0
+wait 1000
+dump smithy__gem_pick0
+ui act close
+wait 2000
+dump smithy__gem_closed
+ui act fn3
+wait 2000
+ui act i2
+wait 2500
+dump smithy__gem_reopen
+ui act close
+wait 2000

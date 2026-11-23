@@ -1,0 +1,41 @@
+<rml>
+<head>
+<title>hotslot</title>
+<link type="text/rcss" href="theme.rcss"/>
+<style>
+/* quickslot registration popup (hotslot.cpp, cFormPopup kinds 1 / 2) */
+body { display: none; }
+body.on { display: block; }
+#scrim { position: absolute; left: 0; top: 0; right: 0; bottom: 0; background-color: #03040aa8; }
+#wrap { position: absolute; left: 0; top: 0; right: 0; bottom: 0; display: flex; justify-content: center; align-items: center; }
+#box { width: 560dp; padding: 24dp 28dp 22dp 28dp; animation: 0.16s cubic-out 1 popin; }
+@keyframes popin { from { opacity: 0; transform: scale(0.96); } to { opacity: 1; transform: scale(1); } }
+#kicker { font-size: 12dp; font-weight: 800; letter-spacing: 3dp; color: #ffb547; }
+#title { font-size: 22dp; font-weight: 800; color: #ffffff; margin-top: 4dp; }
+#body { margin-top: 6dp; font-size: 14dp; color: #aab3d6; }
+#slots { margin-top: 16dp; }
+.pg { margin-bottom: 10dp; white-space: nowrap; }
+.pg .pl { display: inline-block; width: 52dp; font-size: 12dp; font-weight: 800; color: #8892b6; vertical-align: 22dp; }
+.sl { display: inline-block; position: relative; width: 78dp; height: 64dp; margin-right: 8dp; border-radius: 14dp; cursor: pointer;
+      background-color: rgba(255,255,255,8); border: 2dp rgba(255,255,255,22); }
+.sl img { position: absolute; left: 19dp; top: 8dp; width: 40dp; height: 40dp; }
+.sl .k { position: absolute; right: -6dp; top: -8dp; transform: scale(0.72); }
+.sl:hover { background-color: rgba(255,255,255,14); }
+.sl.focus { border-color: rgba(255,209,102,170); }
+.sl.sel { border-color: #ffd166; background-color: rgba(255,209,102,22); }
+#curl { margin-top: 6dp; font-size: 13dp; color: #8892b6; }
+#cur { color: #f1f4ff; font-weight: 700; margin-left: 8dp; }
+#btns { margin-top: 16dp; text-align: right; }
+#btns .btn { min-width: 120dp; }
+</style>
+</head>
+<body data-block="1" data-model="hotslot">
+<div id="scrim"/>
+<div id="wrap"><div id="box" class="glass-strong blur">
+  <div id="kicker">{{kicker}}</div><div id="title">{{title}}</div><div id="body">{{body}}</div>
+  <div id="slots"><div class="pg" data-for="p : sets"><span class="pl">SET {{p.name}}</span><div class="sl" data-for="c : p.slots" data-class-sel="c.sel" data-attr-data-act="c.act"><img data-if="c.has" data-attr-src="c.src"/><span class="k" data-rml="c.k"></span></div></div></div>
+  <div id="curl">선택한 슬롯<span id="cur" data-rml="cur"></span></div>
+  <div id="btns"><span class="btn" id="btn" data-act="close">{{btn}}</span></div>
+</div></div>
+</body>
+</rml>

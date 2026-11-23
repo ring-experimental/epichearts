@@ -1,0 +1,48 @@
+# frame time check for data-binding batch 4 (not a regression scenario): town smith choice (dialogs choice), refine
+# list (smithy), refine popup (smithy rask), alchemist melt list (smithy mode 3), linkstone choice (dialogs 0x13),
+# resurrect list (dialogs 0x14); each open ~12 s (several 300-frame windows)
+# usage: python work/databind/perf/run_perf.py <tag> b4_perf.txt
+wait 13000
+tap 256 168
+wait 2500
+tap 256 184
+wait 9000
+tap 256 160
+wait 4000
+ui dev kbm
+ui dev additem 8 0 5 0
+wait 300
+ui act town
+wait 1500
+ui act fn2
+wait 12000
+ui act i1
+wait 12000
+ui act l0
+wait 1000
+ui act do
+wait 12000
+ui act rno
+wait 1000
+ui act close
+wait 2000
+ui act fn3
+wait 2000
+ui act i0
+wait 12000
+ui act close
+wait 2000
+ui act tw_close
+wait 1500
+ui dev warp 2 1
+wait 8000
+ui dev worldmap 1
+wait 2500
+ui key Return
+wait 12000
+ui key Escape
+wait 1500
+ui key Escape
+wait 2000
+ui dev suicide
+wait 12000

@@ -1,0 +1,67 @@
+<rml>
+<head>
+<title>map</title>
+<link type="text/rcss" href="theme.rcss"/>
+<style>
+body { display: none; }
+body.on { display: block; animation: 0.18s cubic-out 1 fadein; }
+@keyframes fadein { from { opacity: 0; } to { opacity: 1; } }
+#scrim { position: absolute; left: 0; top: 0; right: 0; bottom: 0; background-color: #05060ce6; }
+#panel { position: absolute; left: 28dp; right: 28dp; top: 24dp; bottom: 24dp; }
+#head { position: absolute; left: 26dp; right: 22dp; top: 16dp; height: 44dp; }
+#kick { position: absolute; left: 0; top: -2dp; font-size: 11dp; font-weight: 800; letter-spacing: 2dp; color: #ffb547; }
+#title { position: absolute; left: 0; top: 14dp; font-size: 22dp; font-weight: 800; color: #ffffff; white-space: nowrap; }
+#tools { position: absolute; right: 0; top: 4dp; }
+.tb { display: inline-block; margin-left: 8dp; height: 34dp; line-height: 34dp; padding: 0 14dp; border-radius: 10dp; font-size: 14dp; font-weight: 700;
+      color: #dfe5ff; background-color: rgba(30,35,62,235); border: 1dp rgba(255,255,255,26); cursor: pointer; }
+.tb .i { font-family: lucide; font-size: 15dp; margin-right: 6dp; color: #ffd166; }
+.tb:hover { background-color: rgba(48,55,92,245); }
+.tb.x { width: 38dp; padding: 0; text-align: center; font-family: lucide; font-size: 17dp; }
+.tb.x:hover { background-color: rgba(255,92,122,90); color: #ffffff; }
+#frame { position: absolute; left: 22dp; right: 22dp; top: 70dp; bottom: 48dp; border-radius: 16dp; overflow: hidden;
+         decorator: radial-gradient(circle at 50% 45%, #1a1f3e, #0c0e1c); border: 1dp rgba(255,255,255,26); }
+#map { position: absolute; left: 0; top: 0; right: 0; bottom: 0; }
+/* rooms and aisles: geometry from cFormMinimap::canvasDraw, restyled */
+.ai { position: absolute; background-color: #6c76b0; border-radius: 2dp; }
+.ai.shut { background-color: #2a2f52; }
+.ai.red { background-color: #c0566e; }
+.rm { position: absolute; border-radius: 4dp; background-color: #4a5390; border: 2dp #8c97d8; cursor: pointer; }
+.rm:hover { background-color: #5a64a8; }
+.rm.sp { background-color: #2f6f7a; border-color: #67d6e0; }
+.rm.cur { background-color: #8a6a2a; border-color: #ffd166; }
+.rm.sel { box-shadow: #ffffff 0dp 0dp 0dp 2dp; }
+.rm .ic { position: absolute; left: 50%; top: 50%; width: 20dp; height: 20dp; margin-left: -10dp; margin-top: -10dp; text-align: center; line-height: 20dp;
+          font-family: lucide; font-size: 13dp; color: #b8f4ff; }
+.rm .qm { position: absolute; right: -9dp; top: -12dp; width: 22dp; height: 22dp; line-height: 22dp; text-align: center; border-radius: 11dp;
+          font-family: lucide; font-size: 12dp; color: #1c1206; background-color: #ffb547; }
+.rm .me { position: absolute; left: 50%; top: 50%; width: 10dp; height: 10dp; margin-left: -5dp; margin-top: -5dp; border-radius: 5dp;
+          background-color: #ffffff; box-shadow: #ffd166 0dp 0dp 0dp 3dp; }
+#legend { position: absolute; left: 18dp; bottom: 14dp; font-size: 12dp; color: #aab3d6; }
+#legend > span { margin-right: 16dp; }
+#legend .sw { display: inline-block; width: 12dp; height: 12dp; border-radius: 3dp; margin-right: 6dp; vertical-align: -1dp; }
+#zoom { position: absolute; left: 0; top: 0; right: 0; bottom: 0; display: none; background-color: #05060cf0; }
+#zoom.on { display: block; }
+#zbox { position: absolute; left: 50%; top: 50%; padding: 12dp; border-radius: 14dp; background-color: #0b0d18; border: 1dp rgba(255,255,255,40); overflow: hidden; }
+#zbox img { width: 100%; height: 100%; }
+#zbox img { display: block; }
+#hint { position: absolute; right: 26dp; bottom: 14dp; font-size: 13dp; color: #8892b6; }
+#hint span { margin-left: 18dp; }
+#hint .glyph { margin-right: 4dp; }
+#here { position: absolute; left: 26dp; bottom: 14dp; font-size: 13dp; color: #aab3d6; }
+</style>
+</head>
+<body data-block="1" data-model="map">
+<div id="scrim"/>
+<div id="panel" class="glass-strong">
+  <div id="head"><div id="kick">{{kick}}</div><div id="title" data-rml="title"></div>
+    <div id="tools"><span class="tb" data-act="zoom"><span class="i">&#xe1b6;</span><span id="zlabel">{{zlabel}}</span></span><span class="tb x" data-act="close">&#xe1b2;</span></div>
+  </div>
+  <div id="frame">
+    <div id="map"></div>
+    <div id="legend" data-if="!zoomed"><span><span class="sw" style="background-color:#8a6a2a;border:1dp #ffd166"/>현재 위치</span><span><span class="sw" style="background-color:#4a5390;border:1dp #8c97d8"/>방문한 지역</span><span id="lg_p" data-if="any_sp"><span class="sw" style="background-color:#2f6f7a;border:1dp #67d6e0"/>특수 지역</span><span id="lg_q" data-if="any_quest"><span class="sw" style="background-color:#ffb547"/>퀘스트 목적지</span><span id="lg_s" data-if="any_shut"><span class="sw" style="background-color:#2a2f52;height:4dp;vertical-align:3dp"/>미탐색 통로</span></div>
+    <div id="zoom" data-class-on="zoomed"><div id="zbox"><img id="zimg" src=""/></div></div>
+  </div>
+  <div id="hint" data-rml="hint"></div>
+</div>
+</body>
+</rml>

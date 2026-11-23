@@ -1,0 +1,104 @@
+<rml>
+<head>
+<title>smithy</title>
+<link type="text/rcss" href="theme.rcss"/>
+<style>
+/* blacksmith / alchemist (smithy.cpp, replaces cFormSmithyAlchemy 0xB and the refine popup) */
+body { display: none; }
+body.on { display: block; animation: 0.18s cubic-out 1 fadein; }
+@keyframes fadein { from { opacity: 0; } to { opacity: 1; } }
+#scrim { position: absolute; left: 0; top: 0; right: 0; bottom: 0; background-color: #05060cd0; }
+#main { position: absolute; left: 40dp; right: 40dp; top: 32dp; bottom: 32dp; padding: 26dp 30dp; box-sizing: border-box; }
+#kicker { font-size: 12dp; font-weight: 800; letter-spacing: 3dp; color: #ffb547; }
+#title { font-size: 28dp; font-weight: 800; color: #ffffff; margin-top: 4dp; }
+#tr { position: absolute; right: 30dp; top: 30dp; }
+#tr .chip { font-size: 15dp; padding: 7dp 14dp; }
+#tr .icon { color: #ffd166; margin-right: 6dp; }
+#tr .btn { margin-left: 8dp; padding: 8dp 14dp; font-size: 14dp; }
+#list { position: absolute; left: 30dp; top: 100dp; bottom: 50dp; width: 430dp; overflow-y: auto; padding-right: 4dp; }
+.row { position: relative; height: 60dp; margin-bottom: 6dp; border-radius: 14dp; cursor: pointer; background-color: rgba(255,255,255,7); border: 1dp rgba(255,255,255,16); }
+.row:hover { background-color: rgba(255,255,255,13); }
+.row.focus { background-color: rgba(255,255,255,16); border-color: rgba(255,209,102,150); }
+.row.sel { border-color: #ffd166; background-color: rgba(255,209,102,22); }
+.row img { position: absolute; left: 10dp; top: 8dp; width: 44dp; height: 44dp; }
+.row .nm { position: absolute; left: 66dp; top: 10dp; right: 10dp; font-size: 15dp; font-weight: 700; color: #ffffff; white-space: nowrap; overflow: hidden; }
+.row .ty { position: absolute; left: 66dp; top: 33dp; right: 10dp; font-size: 12dp; color: #8892b6; font-weight: 600; white-space: nowrap; overflow: hidden; }
+.none { padding: 60dp 0; text-align: center; font-size: 15dp; color: #6b7394; }
+#slots { position: absolute; left: 480dp; top: 100dp; width: 230dp; bottom: 50dp; text-align: center; }
+body.noslots #slots { display: none; }
+.slot { display: block; position: relative; width: 150dp; height: 128dp; margin: 0 auto 6dp auto; border-radius: 18dp; cursor: pointer;
+        background-color: rgba(255,255,255,8); border: 2dp rgba(255,255,255,24); }
+.slot.empty { border-color: rgba(255,255,255,20); background-color: rgba(255,255,255,4); }
+.slot.sel, .slot.focus { border-color: #ffd166; }
+.slot img { position: absolute; left: 43dp; top: 18dp; width: 64dp; height: 64dp; }
+.slot .ph { position: absolute; left: 0; right: 0; top: 30dp; font-family: lucide; font-size: 28dp; color: #6b7394; }
+.slot .sl { position: absolute; left: 6dp; right: 6dp; bottom: 10dp; font-size: 13dp; font-weight: 700; color: #c9d1ee; white-space: nowrap; overflow: hidden; }
+.plus { display: block; font-family: lucide; font-size: 20dp; color: #6b7394; margin: 2dp 0 8dp 0; }
+.scrolls { margin-top: 10dp; }
+.sc { display: inline-block; position: relative; width: 48dp; height: 48dp; margin: 0 2dp; border-radius: 12dp; background-color: rgba(255,255,255,8); border: 1dp rgba(255,255,255,22); cursor: pointer; }
+.sc.sel, .sc.focus { border-color: #ffd166; }
+.sc img { position: absolute; left: 6dp; top: 6dp; width: 36dp; height: 36dp; }
+.addsc { margin-top: 12dp; }
+.btn.small { display: block; margin: 6dp auto 0 auto; padding: 6dp 10dp; font-size: 12dp; text-align: left; }
+.btn.small img { width: 20dp; height: 20dp; vertical-align: -5dp; margin-right: 6dp; }
+.btn.small .n { color: #ffd166; font-weight: 800; }
+.btn.off { opacity: 0.35; }
+#det { position: absolute; left: 730dp; right: 30dp; top: 100dp; bottom: 50dp; border-radius: 18dp; background-color: rgba(255,255,255,7); border: 1dp rgba(255,255,255,18); }
+body.noslots #det { left: 480dp; }
+.bigic { position: absolute; left: 20dp; top: 20dp; width: 76dp; height: 76dp; border-radius: 16dp; background-color: rgba(255,255,255,10); }
+.bigic img { position: absolute; left: 10dp; top: 10dp; width: 56dp; height: 56dp; }
+.dn { position: absolute; left: 110dp; top: 26dp; right: 16dp; font-size: 19dp; font-weight: 800; color: #ffffff; }
+.dt { position: absolute; left: 110dp; top: 56dp; right: 16dp; font-size: 12dp; font-weight: 700; color: #ffb547; }
+.hn { position: absolute; left: 20dp; right: 20dp; top: 112dp; font-size: 14dp; line-height: 22dp; color: #b9c0dd; }
+.props { position: absolute; left: 20dp; right: 20dp; bottom: 84dp; }
+.props div { font-size: 15dp; padding: 4dp 0; }
+.props .k { display: inline-block; width: 90dp; color: #8892b6; font-weight: 600; }
+.props .v { color: #f1f4ff; font-weight: 700; }
+.props .bad { color: #ff7d93; font-weight: 700; }
+.acts { position: absolute; left: 20dp; right: 20dp; bottom: 20dp; text-align: right; }
+.acts .btn { margin-left: 8dp; min-width: 120dp; }
+#hint { position: absolute; left: 30dp; bottom: 16dp; font-size: 13dp; color: #8892b6; }
+#hint span { margin-right: 16dp; }
+/* refine popup */
+#rscrim { position: absolute; left: 0; top: 0; right: 0; bottom: 0; background-color: #03040a99; display: none; }
+#rwrap { position: absolute; left: 0; top: 0; right: 0; bottom: 0; display: none; justify-content: center; align-items: center; }
+body.refining #rscrim { display: block; }
+body.refining #rwrap { display: flex; }
+#rbox { width: 460dp; padding: 26dp 30dp 22dp 30dp; animation: 0.16s cubic-out 1 popin; }
+@keyframes popin { from { opacity: 0; transform: scale(0.96); } to { opacity: 1; transform: scale(1); } }
+#rkick { font-size: 12dp; font-weight: 800; letter-spacing: 3dp; color: #ffb547; }
+.rt { margin-top: 6dp; font-size: 22dp; font-weight: 800; color: #ffffff; }
+.rt.ok { color: #7ee2a8; } .rt.bad { color: #ff7d93; } .rt.warn { color: #ffd166; }
+.rbar { margin-top: 18dp; height: 8dp; border-radius: 4dp; background-color: rgba(255,255,255,18); overflow: hidden; }
+.rfill { width: 40%; height: 8dp; border-radius: 4dp; decorator: linear-gradient(to right, #ffd166, #ff9f5a); animation: 0.9s linear infinite slide; }
+@keyframes slide { from { margin-left: -40%; } to { margin-left: 100%; } }
+.rr { margin-top: 10dp; font-size: 16dp; }
+.rr .k { display: inline-block; width: 110dp; color: #8892b6; font-weight: 700; }
+.rr .o { color: #aab3d6; font-weight: 700; }
+.rr .ar { font-family: lucide; color: #6b7394; margin: 0 10dp; }
+.rr .n { color: #ffffff; font-weight: 800; }
+#racts { margin-top: 20dp; text-align: right; }
+body:not(.rdone):not(.rask) #racts { visibility: hidden; }
+#racts .btn { margin-left: 8dp; min-width: 110dp; }
+body.rask #rok, body:not(.rask) #rno, body:not(.rask) #ryes { display: none; }
+.rq { margin-top: 8dp; font-size: 16dp; line-height: 26dp; color: #dbe1ff; }
+</style>
+</head>
+<body data-block="1" data-model="smithy" data-class-noslots="noslots" data-class-refining="refining" data-class-rdone="rdone" data-class-rask="rask">
+<div id="scrim"/>
+<div id="main" class="glass-strong blur">
+  <div id="kicker">{{kicker}}</div><div id="title" data-rml="title"></div>
+  <div id="tr"><span class="chip"><span class="icon">&#xe097;</span><span id="gold">{{gold}}</span></span><span class="btn" data-act="close" data-nonav="1"><span class="icon">&#xe1b2;</span>나가기</span></div>
+  <div id="list"><div class="row" data-for="r : rows" data-class-sel="r.sel" data-attr-data-act="r.act"><img data-attr-src="r.src"/><div class="nm" data-rml="r.nm"></div><div class="ty" data-rml="r.ty"></div></div><div class="none" data-if="list_mode == 1">대상 아이템이 없습니다</div><div class="none" data-if="list_mode == 2"><span class="btn" data-act="pick0">다른 장비 선택</span></div></div>
+  <div id="slots" data-rml="slots"></div>
+  <div id="det" data-rml="det"></div>
+  <div id="hint" data-rml="hint"></div>
+</div>
+<div id="rscrim"/>
+<div id="rwrap"><div id="rbox" class="glass-strong blur">
+  <div id="rkick">REFINE</div>
+  <div id="rbody" data-rml="rbody"></div>
+  <div id="racts"><span class="btn" id="rno" data-act="rno">아니오</span><span class="btn primary" id="ryes" data-act="ryes">제련하기</span><span class="btn primary" id="rok" data-act="rok">확인</span></div>
+</div></div>
+</body>
+</rml>

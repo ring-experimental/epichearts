@@ -1,0 +1,33 @@
+# frame time check (not a regression scenario): run with EH_UIPERF=1, read the "[perf]" lines of run/run.log.
+# Each screen stays open ~12 s (= several 300-frame windows) so whole windows fall inside it.
+# usage: python tools/uishot.py <expanded scenario> <out> tests/saves/lv14 EH_WINSIZE=2280x1080 EH_UIPERF=1 (UISHOT_BUILD=build64)
+#        python work/databind/perf/run_perf.py <tag>
+wait 13000
+tap 256 168
+wait 2500
+tap 256 184
+wait 9000
+tap 256 160
+wait 4000
+ui dev kbm
+wait 300
+ui act menu
+wait 1500
+ui act tab8
+wait 800
+ui act sys_opt
+wait 12000
+ui act o_keys
+wait 12000
+ui act km_close
+wait 800
+ui act o_close
+wait 1500
+ui act sys_help
+wait 12000
+ui act t2
+wait 12000
+ui act hclose
+wait 1500
+ui act close
+wait 1500

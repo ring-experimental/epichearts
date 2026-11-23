@@ -1,0 +1,39 @@
+<rml>
+<head>
+<title>town</title>
+<link type="text/rcss" href="theme.rcss"/>
+<style>
+body { display: none; }
+body.on { display: block; animation: 0.18s cubic-out 1 fadein; }
+@keyframes fadein { from { opacity: 0; } to { opacity: 1; } }
+#scrim { position: absolute; left: 0; top: 0; right: 0; bottom: 0; decorator: linear-gradient(to right, #05060cf4, #05060ce0 60%, #05060c90); }
+#head { position: absolute; left: 80dp; top: 40dp; }
+#head .k { font-size: 13dp; font-weight: 800; letter-spacing: 4dp; color: #ffb547; }
+#head h1 { font-size: 36dp; font-weight: 800; color: #ffffff; margin-top: 6dp; }
+#head .s { font-size: 15dp; color: #9aa3c2; margin-top: 6dp; }
+/* 600 dp tall screens (phones): three rows of 116 dp end at 522 dp; three columns when the width allows */
+#grid { position: absolute; left: 70dp; right: 60dp; top: 150dp; max-width: 1128dp; display: flex; flex-wrap: wrap; }
+.fn {
+    position: relative; flex: 0 0 360dp; width: 360dp; height: 116dp; margin: 0 14dp 12dp 0; border-radius: 18dp; cursor: pointer;
+    background-color: rgba(16,19,36,235); border: 1dp rgba(255,255,255,22); overflow: hidden;
+    transition: background-color border-color transform 0.14s cubic-out;
+}
+.fn:hover, .fn.focus { background-color: rgba(30,34,62,245); border-color: rgba(255,209,102,170); transform: translateY(-3dp); }
+.fn .npc { position: absolute; right: 18dp; bottom: 6dp; }
+.fn .ic { position: absolute; left: 22dp; top: 18dp; font-family: lucide; font-size: 22dp; color: #ffd166; }
+.fn .t { position: absolute; left: 22dp; top: 46dp; font-size: 24dp; font-weight: 800; color: #ffffff; }
+.fn .d { position: absolute; left: 22dp; top: 82dp; font-size: 14dp; color: #9aa3c2; font-weight: 600; }
+#side { position: absolute; right: 60dp; top: 40dp; }
+#side .btn { margin-left: 10dp; }
+#hint { position: absolute; left: 80dp; bottom: 24dp; font-size: 13dp; color: #8892b6; }
+#hint span { margin-right: 16dp; }
+</style>
+</head>
+<body data-block="1" data-model="town">
+<div id="scrim"/>
+<div id="head"><div class="k">TOWN SERVICES</div><h1 id="tname" data-rml="tname"></h1><div class="s">마을 사람들의 도움을 받을 수 있습니다</div></div>
+<div id="grid"><div class="fn" data-for="c : cards" data-attr-id="c.fn" data-attr-data-act="c.fn"><img class="npc" data-attr-id="c.npc" data-attr-src="c.src" data-style-width="c.w" data-style-height="c.h"/><span class="ic" data-rml="c.ic"></span><div class="t">{{c.t}}</div><div class="d">{{c.d}}</div></div></div>
+<div id="side"><span class="btn" data-act="tw_map"><span class="icon">&#xe110;</span>&nbsp; 마을 지도</span><span class="btn" data-act="tw_close"><span class="icon">&#xe1b2;</span>&nbsp; 닫기</span></div>
+<div id="hint" data-rml="hint"></div>
+</body>
+</rml>

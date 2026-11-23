@@ -1,0 +1,63 @@
+<rml>
+<head>
+<title>store</title>
+<link type="text/rcss" href="theme.rcss"/>
+<style>
+body { display: none; }
+body.on { display: block; animation: 0.18s cubic-out 1 fadein; }
+@keyframes fadein { from { opacity: 0; } to { opacity: 1; } }
+#scrim { position: absolute; left: 0; top: 0; right: 0; bottom: 0; background-color: #05060cd0; }
+#main { position: absolute; left: 40dp; right: 40dp; top: 32dp; bottom: 32dp; padding: 26dp 30dp; box-sizing: border-box; }
+#kicker { font-size: 12dp; font-weight: 800; letter-spacing: 3dp; color: #ffb547; }
+#title { font-size: 30dp; font-weight: 800; color: #ffffff; margin-top: 4dp; }
+#tr { position: absolute; right: 30dp; top: 30dp; }
+#tr .chip { font-size: 15dp; padding: 7dp 14dp; }
+#tr .icon { color: #ffd166; margin-right: 6dp; }
+#tr .btn { margin-left: 8dp; padding: 8dp 14dp; font-size: 14dp; }
+#cats { position: absolute; left: 30dp; top: 104dp; }
+#cats .c { display: inline-block; padding: 7dp 16dp; margin-right: 8dp; border-radius: 10dp; font-size: 14dp; font-weight: 700; color: #aab3d6; background-color: rgba(255,255,255,9); cursor: pointer; }
+#cats .c:hover, #cats .c.focus { background-color: rgba(255,255,255,20); color: #ffffff; }
+#cats .sb { display: inline-block; margin-right: 8dp; vertical-align: 1dp; }
+#cats .sb .glyph { transform: scale(0.85); }
+#cats .c.on { color: #1c0b10; decorator: linear-gradient(to bottom, #ffd59a, #ffad66); }
+#list { position: absolute; left: 30dp; top: 156dp; bottom: 56dp; width: 600dp; overflow-y: auto; }
+.row { position: relative; height: 64dp; margin-bottom: 6dp; border-radius: 14dp; cursor: pointer; background-color: rgba(255,255,255,7); border: 1dp rgba(255,255,255,16);
+       transition: background-color border-color 0.1s cubic-out; }
+.row:hover { background-color: rgba(255,255,255,13); }
+.row.focus { background-color: rgba(255,255,255,16); border-color: rgba(255,209,102,150); }
+.row.sel { border-color: #ffd166; background-color: rgba(255,209,102,22); }
+.row.bad { opacity: 0.5; }
+.row img { position: absolute; left: 10dp; top: 8dp; width: 48dp; height: 48dp; }
+.row .nm { position: absolute; left: 72dp; top: 11dp; font-size: 16dp; font-weight: 700; color: #ffffff; }
+.row .ty { position: absolute; left: 72dp; top: 35dp; font-size: 12dp; color: #8892b6; font-weight: 600; }
+.row .pr { position: absolute; right: 16dp; top: 20dp; font-size: 17dp; font-weight: 800; color: #ffd166; }
+.row .pr .g { font-size: 12dp; color: #aab3d6; }
+.row .cnt { position: absolute; left: 44dp; top: 38dp; font-size: 11dp; font-weight: 800; color: #ffffff; font-effect: outline(1dp #000000c0); }
+#det { position: absolute; left: 650dp; right: 30dp; top: 104dp; bottom: 56dp; border-radius: 18dp; background-color: rgba(255,255,255,7); border: 1dp rgba(255,255,255,18); }
+.bigic { position: absolute; left: 22dp; top: 22dp; width: 84dp; height: 84dp; border-radius: 18dp; background-color: rgba(255,255,255,10); }
+.bigic img { position: absolute; left: 10dp; top: 10dp; width: 64dp; height: 64dp; }
+.dn { position: absolute; left: 124dp; top: 28dp; right: 20dp; font-size: 22dp; font-weight: 800; color: #ffffff; }
+.dt { position: absolute; left: 124dp; top: 62dp; font-size: 13dp; font-weight: 700; color: #ffb547; }
+.props { position: absolute; left: 22dp; right: 22dp; top: 124dp; }
+.props div { font-size: 15dp; color: #c9d1f2; padding: 5dp 0; }
+.props .k { display: inline-block; width: 96dp; color: #8892b6; font-weight: 600; }
+.ds { position: absolute; left: 22dp; right: 22dp; top: 220dp; bottom: 80dp; font-size: 15dp; line-height: 24dp; color: #b9c0dd; overflow-y: auto; }
+.acts { position: absolute; left: 22dp; right: 22dp; bottom: 20dp; }
+.acts .btn { width: 100%; box-sizing: border-box; }
+.none { position: absolute; left: 0; right: 0; top: 45%; text-align: center; font-size: 15dp; color: #6b7394; }
+#hint { position: absolute; left: 30dp; bottom: 18dp; font-size: 13dp; color: #8892b6; }
+#hint span { margin-right: 16dp; }
+</style>
+</head>
+<body data-block="1" data-model="store">
+<div id="scrim"/>
+<div id="main" class="glass-strong blur">
+  <div id="kicker">{{kicker}}</div><div id="title" data-rml="title"></div>
+  <div id="tr"><span class="chip"><span class="icon">&#xe097;</span><span id="gold">{{gold}}</span></span><span class="btn" data-act="close" data-nonav="1"><span class="icon">&#xe1b2;</span> 나가기</span></div>
+  <div id="cats"><span class="sb" data-if="gl != ''" data-rml="gl"></span><span class="c" data-for="c : cats" data-class-on="c.on" data-attr-data-act="c.act">{{c.t}}</span><span class="sb" data-if="gr != ''" data-rml="gr"></span></div>
+  <div id="list"><div class="row" data-for="r : rows" data-class-sel="r.sel" data-class-bad="r.bad" data-attr-data-act="r.act"><img data-attr-src="r.src"/><div class="nm" data-rml="r.nm"></div><div class="ty" data-rml="r.ty"></div><div class="pr">{{r.pr}}<span class="g"> G</span></div><span class="cnt" data-if="r.cnt != ''">{{r.cnt}}</span></div><div class="none" data-if="rows.size == 0">항목이 없습니다</div></div><div class="lfade" style="left: 30dp; width: 588dp; bottom: 56dp;"/>
+  <div id="det"><div class="bigic" data-if="has"><img data-attr-src="icon"/></div><div class="dn" data-if="has" data-rml="dn"></div><div class="dt" data-if="has" data-rml="dt"></div><div class="props" data-if="has"><div><span class="k">{{pk}}</span>{{price}} G</div><div data-if="lv > 1"><span class="k">필요 레벨</span>Lv {{lv}}</div><div><span class="k">보유</span>{{cnt}}개</div></div><div class="ds" data-if="has" data-rml="ds"></div><div class="acts" data-if="has"><span class="btn primary" data-act="deal">{{deal}}</span></div><div class="none" data-if="!has">항목을 선택하세요</div></div>
+  <div id="hint" data-rml="hint"></div>
+</div>
+</body>
+</rml>

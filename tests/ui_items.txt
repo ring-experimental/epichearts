@@ -1,0 +1,50 @@
+# item screens of the smith and the alchemist with the Lv14 save's equipment (slot 2, in town)
+wait 10000
+snap title
+wait 3000
+tap 256 168      # Game Start
+wait 2500
+snap saves
+tap 256 184      # second save slot
+wait 9000
+snap field_popup
+tap 256 160      # dismiss mission popup
+wait 2000
+tap 484 20       # Town button
+wait 2000
+tap 183 128      # 대장장이
+wait 2500
+tap 256 80       # 장비 수리
+wait 2500
+snap i_repair
+tap 155 75       # second item
+wait 1500
+snap i_repair_sel
+tap 108 31       # 닫기 (back to the town menu)
+wait 2000
+tap 183 128      # 대장장이
+wait 2500
+tap 256 120      # 장비 제련
+wait 2500
+snap i_refine
+tap 108 31
+wait 2000
+tap 183 128      # 대장장이
+wait 2500
+tap 256 200      # 장비 복구
+wait 2500
+snap i_restore
+tap 108 31
+wait 2000
+tap 328 128      # 연금술사
+wait 2500
+tap 256 100      # 장비 녹이기
+wait 2500
+snap i_melt
+tap 108 31
+wait 2000
+tap 328 128      # 연금술사
+wait 2500
+tap 256 140      # 장비 스캔
+wait 2500
+snap i_scan

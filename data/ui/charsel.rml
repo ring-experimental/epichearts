@@ -1,0 +1,44 @@
+<rml>
+<head>
+<title>charsel</title>
+<link type="text/rcss" href="theme.rcss"/>
+<style>
+body { display: none; }
+body.on { display: block; animation: 0.25s cubic-out 1 fadein; }
+@keyframes fadein { from { opacity: 0; } to { opacity: 1; } }
+#bg { position: absolute; left: 0; top: 0; right: 0; bottom: 0; decorator: radial-gradient(circle at 50% 40%, #232a58, #07080f); }
+#head { position: absolute; left: 0; right: 0; top: 34dp; text-align: center; }
+#head .k { font-size: 13dp; font-weight: 800; letter-spacing: 5dp; color: #ffb547; }
+#head h1 { font-size: 34dp; font-weight: 800; color: #ffffff; margin-top: 8dp; }
+#cards { position: absolute; left: 50%; top: 50%; margin-top: -180dp; width: 1080dp; margin-left: -540dp; height: 390dp; text-align: center; }
+.cc {
+    display: inline-block; position: relative; width: 330dp; height: 380dp; margin: 0 12dp; border-radius: 22dp; cursor: pointer; vertical-align: top;
+    background-color: rgba(255,255,255,8); border: 1dp rgba(255,255,255,24);
+    transition: transform border-color background-color 0.18s cubic-out;
+}
+.cc:hover { background-color: rgba(255,255,255,14); }
+.cc.sel { background-color: rgba(255,181,71,26); border-color: #ffd166; box-shadow: rgba(255,181,71,80) 0dp 0dp 40dp 0dp; }
+.cc .stage { position: absolute; left: 0; right: 0; top: 0; height: 250dp; border-radius: 22dp 22dp 0dp 0dp; decorator: radial-gradient(circle at 50% 70%, #ffffff18, #ffffff00); }
+.cc .stage img { position: absolute; }
+.cc .floor { position: absolute; left: 70dp; right: 70dp; top: 214dp; height: 36dp; decorator: radial-gradient(ellipse, #000000a0, #00000000); }
+.cc .nm { position: absolute; left: 0; right: 0; top: 258dp; font-size: 26dp; font-weight: 800; color: #ffffff; }
+.cc .ds { position: absolute; left: 22dp; right: 22dp; top: 300dp; font-size: 14dp; line-height: 22dp; color: #b9c0dd; }
+.cc .badge { position: absolute; left: 50%; top: 14dp; margin-left: -40dp; width: 80dp; font-size: 11dp; font-weight: 800; letter-spacing: 2dp; color: #1c1206;
+             decorator: linear-gradient(to bottom, #ffe39a, #ffb547); border-radius: 8dp; padding: 3dp 0; display: none; }
+.cc.sel .badge { display: block; }
+#bar { position: absolute; left: 0; right: 0; bottom: 44dp; text-align: center; }
+#bar .btn { min-width: 220dp; margin: 0 8dp; font-size: 18dp; }
+#bar .btn.off { opacity: 0.4; }
+#hint { position: absolute; right: 44dp; bottom: 14dp; font-size: 13dp; color: #8892b6; }
+#hint span { margin-left: 18dp; }
+#hint .glyph { margin-right: 3dp; }
+</style>
+</head>
+<body data-block="1" data-model="charsel">
+<div id="bg"/>
+<div id="head"><div class="k">NEW ADVENTURE</div><h1>함께 여행할 영웅을 선택하세요</h1></div>
+<div id="cards"><div class="cc" id="cc0" data-act="cls0" data-class-sel="sel == 0"><div class="stage"><img id="spr0" src=""/></div><div class="floor"/><div class="badge">SELECTED</div><div class="nm" data-rml="names[0]"></div><div class="ds" data-rml="descs[0]"></div></div><div class="cc" id="cc1" data-act="cls1" data-class-sel="sel == 1"><div class="stage"><img id="spr1" src=""/></div><div class="floor"/><div class="badge">SELECTED</div><div class="nm" data-rml="names[1]"></div><div class="ds" data-rml="descs[1]"></div></div><div class="cc" id="cc2" data-act="cls2" data-class-sel="sel == 2"><div class="stage"><img id="spr2" src=""/></div><div class="floor"/><div class="badge">SELECTED</div><div class="nm" data-rml="names[2]"></div><div class="ds" data-rml="descs[2]"></div></div></div>
+<div id="bar"><span class="btn" id="b_cancel" data-act="cs_cancel" data-if="can_cancel">돌아가기</span><span class="btn primary" id="b_start" data-act="cs_start" data-class-off="sel < 0">모험 시작</span></div>
+<div id="hint" data-rml="hint"></div>
+</body>
+</rml>

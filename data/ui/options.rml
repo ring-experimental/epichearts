@@ -1,0 +1,86 @@
+<rml>
+<head>
+<title>options</title>
+<link type="text/rcss" href="theme.rcss"/>
+<style>
+body { display: none; }
+body.on { display: block; }
+#scrim { position: absolute; left: 0; top: 0; right: 0; bottom: 0; background-color: #03040acc; }
+#panel { position: absolute; left: 50%; top: 24dp; bottom: 24dp; width: 760dp; margin-left: -380dp; padding: 30dp 34dp; box-sizing: border-box; } /* fits 600dp phones */
+#head { position: relative; height: 44dp; }
+#head h1 { font-size: 28dp; font-weight: 800; color: #ffffff; }
+#head h1 .icon { color: #ffd166; margin-right: 12dp; font-size: 24dp; }
+#close { position: absolute; right: 0; top: 0; width: 42dp; height: 42dp; line-height: 42dp; text-align: center; border-radius: 12dp;
+         font-family: lucide; font-size: 20dp; color: #c9d1f2; background-color: rgba(255,255,255,14); cursor: pointer; }
+#close:hover { background-color: rgba(255,255,255,34); color: #ffffff; }
+#body { position: absolute; left: 34dp; right: 34dp; top: 88dp; bottom: 28dp; overflow-y: auto; padding-right: 6dp; }
+.sec { font-size: 12dp; font-weight: 800; letter-spacing: 2dp; color: #ffb547; margin: 18dp 0 8dp 4dp; }
+.row {
+    position: relative; height: 58dp; margin-bottom: 6dp; padding: 0 18dp; border-radius: 12dp; cursor: pointer;
+    background-color: rgba(255,255,255,7); border: 1dp rgba(255,255,255,0);
+    transition: background-color border-color 0.12s cubic-out;
+}
+.row:hover, .row.focus { background-color: rgba(255,255,255,16); border-color: rgba(255,209,102,140); }
+.row .l { position: absolute; left: 18dp; top: 10dp; font-size: 17dp; font-weight: 700; color: #f1f4ff; }
+.row .s { position: absolute; left: 18dp; top: 32dp; font-size: 12dp; font-weight: 600; color: #8892b6; }
+.row .ctl { position: absolute; right: 16dp; top: 15dp; height: 28dp; }
+.seg { display: inline-block; width: 22dp; height: 10dp; margin-left: 4dp; margin-top: 9dp; border-radius: 3dp; background-color: rgba(255,255,255,26); cursor: pointer; }
+.seg.on { decorator: linear-gradient(to right, #ffb547, #ff8f5c); }
+.val { display: inline-block; width: 72dp; text-align: right; font-size: 15dp; font-weight: 800; color: #ffd166; vertical-align: top; line-height: 28dp; }
+.arrow { display: inline-block; width: 26dp; height: 28dp; line-height: 28dp; text-align: center; font-family: lucide; font-size: 15dp; color: #aab3d6; cursor: pointer; vertical-align: top; }
+.toggle { display: inline-block; width: 54dp; height: 28dp; border-radius: 14dp; background-color: rgba(255,255,255,26); position: relative; transition: background-color 0.15s cubic-out; }
+.toggle .k { position: absolute; left: 3dp; top: 3dp; width: 22dp; height: 22dp; border-radius: 11dp; background-color: #d8deff; transition: left 0.15s cubic-out; }
+.toggle.on { decorator: linear-gradient(to right, #ffb547, #ff8f5c); }
+.toggle.on .k { left: 29dp; background-color: #ffffff; }
+.choice { display: inline-block; padding: 4dp 12dp; margin-left: 6dp; border-radius: 8dp; font-size: 14dp; font-weight: 700; color: #aab3d6; background-color: rgba(255,255,255,10); line-height: 20dp; cursor: pointer; }
+.choice.on { color: #1c0b10; decorator: linear-gradient(to bottom, #ffd59a, #ffad66); }
+#foot { position: absolute; left: 34dp; right: 34dp; bottom: 22dp; font-size: 13dp; color: #8892b6; }
+#foot span { margin-right: 16dp; }
+.chgbtn { display: inline-block; margin-top: -2dp; height: 28dp; line-height: 28dp; padding: 0 12dp 0 16dp; border-radius: 9dp; font-size: 14dp; font-weight: 700; color: #dfe5ff;
+          background-color: rgba(255,255,255,14); border: 1dp rgba(255,255,255,30); }
+.chgbtn .i { font-family: lucide; font-size: 14dp; color: #ffd166; }
+.row.dim { opacity: 0.45; }
+#otoast { position: absolute; left: 50%; bottom: 64dp; width: 420dp; margin-left: -210dp; padding: 12dp 18dp; box-sizing: border-box; border-radius: 22dp;
+          text-align: center; font-size: 15dp; font-weight: 700; color: #ffffff; background-color: rgba(20,22,40,235); border: 1dp rgba(255,209,102,120);
+          opacity: 0; transition: opacity 0.2s cubic-out; pointer-events: none; z-index: 10; }
+#otoast.on { opacity: 1; }
+</style>
+</head>
+<body data-block="1" data-model="options">
+<div id="scrim"/>
+<div id="panel" class="glass-strong blur">
+  <div id="head"><h1><span class="icon">&#xe154;</span>설정</h1><div id="close" data-act="o_close" data-nonav="1">&#xe1b2;</div></div>
+  <div class="lfade" style="left: 34dp; right: 34dp; bottom: 28dp;"/>
+  <div id="body">
+    <div class="sec">사운드</div>
+    <div class="row" id="r_bgm" data-act="o_bgm"><div class="l">배경 음악</div><div class="s">필드와 전투의 BGM 볼륨</div><div class="ctl" id="c_bgm"><span class="arrow" data-act="o_bgm-" data-nonav="1">&#xe06e;</span><span class="seg" data-for="s : bgm.segs" data-class-on="s.on" data-attr-data-act="s.act" data-nonav="1"></span><span class="arrow" data-act="o_bgm+" data-nonav="1">&#xe06f;</span><span class="val">{{bgm.val}}</span></div></div>
+    <div class="row" id="r_fx" data-act="o_fx"><div class="l">효과음</div><div class="s">공격, 스킬, 인터페이스 소리</div><div class="ctl" id="c_fx"><span class="arrow" data-act="o_fx-" data-nonav="1">&#xe06e;</span><span class="seg" data-for="s : fx.segs" data-class-on="s.on" data-attr-data-act="s.act" data-nonav="1"></span><span class="arrow" data-act="o_fx+" data-nonav="1">&#xe06f;</span><span class="val">{{fx.val}}</span></div></div>
+    <div class="sec">게임플레이</div>
+    <div class="row" id="r_speed" data-act="o_speed"><div class="l">게임 속도</div><div class="s">전투와 이동의 진행 속도 (원작 기본 1.00×)</div><div class="ctl" id="c_speed"><span class="arrow" data-act="o_speed-" data-nonav="1">&#xe06e;</span><span class="seg" data-for="s : speed.segs" data-class-on="s.on" data-attr-data-act="s.act" data-nonav="1"></span><span class="arrow" data-act="o_speed+" data-nonav="1">&#xe06f;</span><span class="val">{{speed.val}}</span></div></div>
+    <div class="row" id="r_loot" data-act="o_loot"><div class="l">아이템 자동 획득</div><div class="s">흡수의 묘약 효과로 주변 아이템을 자동으로 줍습니다</div><div class="ctl" id="c_loot"><span class="toggle" data-class-on="loot"><span class="k"/></span></div></div>
+    <div class="row" id="r_keys" data-act="o_keys"><div class="l">키 설정</div><div class="s">키보드 · 게임패드 조작 변경</div><div class="ctl"><span class="chgbtn">변경 <span class="i">&#xe06f;</span></span></div></div>
+    <div class="row" id="r_ctrl" data-act="o_ctrl"><div class="l">터치 조작 방식</div><div class="s">Direct: 길게 눌러 이동, 탭해서 공격 · V-Pad: 가상 패드와 버튼</div><div class="ctl" id="c_ctrl"><span class="choice" data-class-on="direct" data-act="o_ctrl=1" data-nonav="1">Direct</span><span class="choice" data-class-on="!direct" data-act="o_ctrl=0" data-nonav="1">V-Pad</span></div></div>
+    <div class="row" id="r_vpx" data-act="o_vpx" data-class-dim="direct"><div class="l">방향키 가로 위치</div><div class="s">V-Pad 방향키를 오른쪽으로 옮깁니다</div><div class="ctl" id="c_vpx"><span class="arrow" data-act="o_vpx-" data-nonav="1">&#xe06e;</span><span class="seg" data-for="s : vpx.segs" data-class-on="s.on" data-attr-data-act="s.act" data-nonav="1"></span><span class="arrow" data-act="o_vpx+" data-nonav="1">&#xe06f;</span><span class="val">{{vpx.val}}</span></div></div>
+    <div class="row" id="r_vpy" data-act="o_vpy" data-class-dim="direct"><div class="l">방향키 세로 위치</div><div class="s">V-Pad 방향키를 위로 옮깁니다</div><div class="ctl" id="c_vpy"><span class="arrow" data-act="o_vpy-" data-nonav="1">&#xe06e;</span><span class="seg" data-for="s : vpy.segs" data-class-on="s.on" data-attr-data-act="s.act" data-nonav="1"></span><span class="arrow" data-act="o_vpy+" data-nonav="1">&#xe06f;</span><span class="val">{{vpy.val}}</span></div></div>
+    <div class="row" id="r_vib" data-act="o_vib"><div class="l">진동</div><div class="s">타격과 피격 시 진동 (컨트롤러 · 모바일)</div><div class="ctl" id="c_vib"><span class="toggle" data-class-on="vib"><span class="k"/></span></div></div>
+    <div class="row" id="r_vibs" data-act="o_vibs" data-class-dim="!vib"><div class="l">진동 세기</div><div class="s">컨트롤러 진동 · 휴대폰 진동의 세기</div><div class="ctl" id="c_vibs"><span class="arrow" data-act="o_vibs-" data-nonav="1">&#xe06e;</span><span class="seg" data-for="s : vibs.segs" data-class-on="s.on" data-attr-data-act="s.act" data-nonav="1"></span><span class="arrow" data-act="o_vibs+" data-nonav="1">&#xe06f;</span><span class="val">{{vibs.val}}</span></div></div>
+    <div class="sec">화면</div>
+    <div class="row" id="r_full" data-act="o_full" data-if="full_row"><div class="l">전체 화면</div><div class="s">F11 / Alt+Enter</div><div class="ctl" id="c_full"><span class="toggle" data-class-on="full"><span class="k"/></span></div></div>
+    <div class="row" id="r_sharp" data-act="o_sharp"><div class="l">픽셀 필터</div><div class="s">도트 그래픽 확대 방식</div><div class="ctl" id="c_sharp"><span class="choice" data-class-on="sharp" data-act="o_sharp=1" data-nonav="1">선명하게</span><span class="choice" data-class-on="!sharp" data-act="o_sharp=0" data-nonav="1">부드럽게</span></div></div>
+    <div class="row" id="r_scale" data-act="o_scale"><div class="l">인터페이스 크기</div><div class="s">메뉴와 HUD 배율</div><div class="ctl" id="c_scale"><span class="arrow" data-act="o_scale-" data-nonav="1">&#xe06e;</span><span class="seg" data-for="s : scale.segs" data-class-on="s.on" data-attr-data-act="s.act" data-nonav="1"></span><span class="arrow" data-act="o_scale+" data-nonav="1">&#xe06f;</span><span class="val">{{scale.val}}</span></div></div>
+    <div class="sec">정보</div>
+    <div class="row" id="r_ver" data-act="o_ver"><div class="l">버전</div><div class="s">{{ver}}</div></div>
+    <div data-if="dev">
+    <div class="sec">개발자 옵션</div>
+    <div class="row" id="r_mexp" data-act="o_mexp"><div class="l">경험치 배율</div><div class="s">몬스터를 쓰러뜨려 얻는 경험치</div><div class="ctl"><span class="arrow" data-act="o_mexp-" data-nonav="1">&#xe06e;</span><span class="seg" data-for="s : mexp.segs" data-class-on="s.on" data-attr-data-act="s.act" data-nonav="1"></span><span class="arrow" data-act="o_mexp+" data-nonav="1">&#xe06f;</span><span class="val">{{mexp.val}}</span></div></div>
+    <div class="row" id="r_mgold" data-act="o_mgold"><div class="l">골드 배율</div><div class="s">몬스터가 떨어뜨리는 골드</div><div class="ctl"><span class="arrow" data-act="o_mgold-" data-nonav="1">&#xe06e;</span><span class="seg" data-for="s : mgold.segs" data-class-on="s.on" data-attr-data-act="s.act" data-nonav="1"></span><span class="arrow" data-act="o_mgold+" data-nonav="1">&#xe06f;</span><span class="val">{{mgold.val}}</span></div></div>
+    <div class="row" id="r_mlife" data-act="o_mlife"><div class="l">채집 · 낚시 배율</div><div class="s">채집 · 채광 · 낚시 획득량 (숙련도 경험치도 같이 오릅니다)</div><div class="ctl"><span class="arrow" data-act="o_mlife-" data-nonav="1">&#xe06e;</span><span class="seg" data-for="s : mlife.segs" data-class-on="s.on" data-attr-data-act="s.act" data-nonav="1"></span><span class="arrow" data-act="o_mlife+" data-nonav="1">&#xe06f;</span><span class="val">{{mlife.val}}</span></div></div>
+    <div class="row" id="r_mref" data-act="o_mref"><div class="l">제련 성공 확률 배율</div><div class="s">대장간 장비 제련(+단계) 성공 확률, 최대 100%</div><div class="ctl"><span class="arrow" data-act="o_mref-" data-nonav="1">&#xe06e;</span><span class="seg" data-for="s : mref.segs" data-class-on="s.on" data-attr-data-act="s.act" data-nonav="1"></span><span class="arrow" data-act="o_mref+" data-nonav="1">&#xe06f;</span><span class="val">{{mref.val}}</span></div></div>
+    <div class="row" id="r_devoff" data-act="o_devoff"><div class="l">개발자 옵션 끄기</div><div class="s">배율을 원래대로 되돌리고 이 항목을 숨깁니다</div></div>
+    </div>
+  </div>
+  <div id="foot" data-rml="foot"></div>
+  <div id="otoast" data-class-on="toast_on">{{toast}}</div>
+</div>
+</body>
+</rml>

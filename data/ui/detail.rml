@@ -1,0 +1,42 @@
+<rml>
+<head>
+<title>detail</title>
+<link type="text/rcss" href="theme.rcss"/>
+<style>
+/* item detail (detail.cpp, replaces cFormDetail form 2) */
+body { display: none; }
+body.on { display: block; }
+#scrim { position: absolute; left: 0; top: 0; right: 0; bottom: 0; background-color: #03040aa8; }
+#wrap { position: absolute; left: 0; top: 0; right: 0; bottom: 0; padding: 12dp 0; box-sizing: border-box; display: flex; justify-content: center; align-items: center; }
+/* taller than the screen (stats + gems + materials + description on a 600 dp phone): the whole box scrolls; width = 520 content + padding + border */
+#box { width: 578dp; max-height: 100%; box-sizing: border-box; overflow-y: auto; padding: 24dp 28dp 22dp 28dp; animation: 0.16s cubic-out 1 popin; }
+@keyframes popin { from { opacity: 0; transform: scale(0.96); } to { opacity: 1; transform: scale(1); } }
+#head { position: relative; height: 80dp; }
+#ic { position: absolute; left: 0; top: 0; width: 76dp; height: 76dp; border-radius: 16dp; background-color: rgba(255,255,255,10); }
+#icon { position: absolute; left: 10dp; top: 10dp; width: 56dp; height: 56dp; }
+#name { position: absolute; left: 92dp; top: 10dp; right: 0; font-size: 21dp; font-weight: 800; color: #ffffff; }
+#sub { position: absolute; left: 92dp; top: 44dp; right: 0; font-size: 13dp; font-weight: 700; color: #ffb547; }
+#sub .bad { color: #ff7d93; } #sub .ok { color: #7ee2a8; }
+#rows { margin-top: 14dp; }
+.pr { font-size: 15dp; padding: 4dp 0; }
+.pr .k { display: inline-block; width: 110dp; color: #8892b6; font-weight: 600; }
+.pr .v { color: #f1f4ff; font-weight: 700; }
+.pr .bad { color: #ff7d93; font-weight: 700; }
+.gem { font-size: 14dp; color: #c9d1ee; padding: 3dp 0; }
+.gem img { width: 26dp; height: 26dp; vertical-align: -8dp; margin-right: 8dp; }
+.sec { margin-top: 10dp; font-size: 12dp; font-weight: 800; letter-spacing: 2dp; color: #ffb547; }
+#desc { margin-top: 14dp; max-height: 200dp; overflow-y: auto; font-size: 15dp; line-height: 25dp; color: #c9d1ee; padding-top: 12dp; border-top: 1dp rgba(255,255,255,18); }
+#btns { margin-top: 18dp; text-align: right; }
+#ok { min-width: 130dp; }
+</style>
+</head>
+<body data-block="1" data-model="detail">
+<div id="scrim" data-act="ok" data-nonav="1"/>
+<div id="wrap"><div id="box" class="glass-strong blur">
+  <div id="head"><div id="ic"><img id="icon" data-attr-src="icon"/></div><div id="name" data-rml="name"></div><div id="sub" data-rml="sub"></div></div>
+  <div id="rows"><div class="pr" data-for="r : rows" data-rml="r.rml"></div><div class="gem" data-for="g : gems" data-rml="g.rml"></div><div class="sec" data-if="mats.size > 0">재료</div><div class="gem" data-for="t : mats" data-rml="t.rml"></div></div>
+  <div id="desc" data-if="desc != ''" data-rml="desc"></div>
+  <div id="btns"><span class="btn primary" id="ok" data-act="ok">확인</span></div>
+</div></div>
+</body>
+</rml>
